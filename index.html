@@ -39,6 +39,7 @@
   </script>
 
   <style>
+    html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; }
     body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #141211; color: #e2e8f0; }
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
@@ -50,9 +51,9 @@
     }
   </style>
 </head>
-<body class="bg-[#141211] text-slate-100 min-h-screen flex flex-col md:flex-row overflow-x-hidden antialiased">
+<body class="bg-[#141211] text-slate-100 h-screen w-screen flex flex-col md:flex-row overflow-hidden antialiased">
 
-  <!-- LOGIN LOCK MODAL (GAMBAR 2) -->
+  <!-- LOGIN LOCK MODAL -->
   <div id="loginModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
     <div class="bg-[#1e1a17] border border-[#2e2722] rounded-3xl p-6 sm:p-8 max-w-md w-full text-center space-y-6 shadow-2xl relative">
       <!-- Icon Logo -->
@@ -97,8 +98,8 @@
     </div>
   </div>
 
-  <!-- SIDEBAR NAVIGASI (GAMBAR 1) -->
-  <aside class="w-full md:w-64 bg-[#1e1a17] border-r border-[#2e2722] flex flex-col justify-between p-4 shrink-0 z-30">
+  <!-- SIDEBAR NAVIGASI -->
+  <aside class="w-full md:w-64 bg-[#1e1a17] border-r border-[#2e2722] flex flex-col justify-between p-4 shrink-0 z-30 h-full overflow-y-auto">
     <div class="space-y-6">
       
       <!-- Brand Logo Header -->
@@ -165,7 +166,7 @@
     </div>
 
     <!-- Bottom Logout Button -->
-    <div class="pt-4 border-t border-[#2e2722]">
+    <div class="pt-4 border-t border-[#2e2722] mt-auto">
       <button onclick="logout()" class="w-full bg-red-950/40 hover:bg-red-900/60 border border-red-800/60 text-red-300 text-xs font-bold py-2.5 rounded-xl transition-all flex items-center justify-center gap-2">
         <i class="fa-solid fa-power-off"></i> Logout / Ganti Role
       </button>
@@ -173,12 +174,12 @@
   </aside>
 
   <!-- KONTEN UTAMA -->
-  <main class="flex-1 flex flex-col lg:flex-row overflow-hidden">
+  <main class="flex-1 flex flex-col lg:flex-row overflow-hidden h-full">
 
     <!-- 1. KASIR (POS) -->
-    <section id="view-pos" class="flex-1 flex flex-col lg:flex-row overflow-hidden w-full">
+    <section id="view-pos" class="flex-1 flex flex-col lg:flex-row overflow-hidden w-full h-full">
       <!-- Left: Menu Catalog Grid -->
-      <div class="flex-1 flex flex-col p-4 md:p-6 overflow-y-auto space-y-5">
+      <div class="flex-1 flex flex-col p-4 md:p-6 overflow-y-auto space-y-5 h-full">
         
         <!-- Header & Search Bar -->
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -204,15 +205,15 @@
         </div>
 
         <!-- Products Grid -->
-        <div id="menuGrid" class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 pb-20 lg:pb-0">
+        <div id="menuGrid" class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 pb-6">
           <!-- Dynamic Menu Cards -->
         </div>
       </div>
 
       <!-- Right: Active Order Cart Panel (Sidebar Right) -->
-      <div class="w-full lg:w-96 bg-[#1e1a17] border-t lg:border-t-0 lg:border-l border-[#2e2722] flex flex-col justify-between h-auto lg:h-full z-20">
+      <div class="w-full lg:w-96 bg-[#1e1a17] border-t lg:border-t-0 lg:border-l border-[#2e2722] flex flex-col justify-between h-full z-20 shrink-0">
         
-        <div class="p-4 border-b border-[#2e2722] flex justify-between items-center">
+        <div class="p-4 border-b border-[#2e2722] flex justify-between items-center shrink-0">
           <h3 class="font-bold text-white text-sm flex items-center gap-2">
             <i class="fa-solid fa-receipt text-[#b88652]"></i> Pesanan Saat Ini
           </h3>
@@ -222,12 +223,12 @@
         </div>
 
         <!-- Cart Items list container -->
-        <div id="cartItems" class="flex-1 overflow-y-auto p-4 space-y-3 min-h-[220px] max-h-[380px] lg:max-h-none">
+        <div id="cartItems" class="flex-1 overflow-y-auto p-4 space-y-3 min-h-0">
           <!-- Dynamic Items Injected Here -->
         </div>
 
         <!-- Calculation & Summary Footer -->
-        <div class="p-4 bg-[#141211]/60 border-t border-[#2e2722] space-y-3">
+        <div class="p-4 bg-[#141211]/60 border-t border-[#2e2722] space-y-3 shrink-0">
           <div class="flex justify-between items-center text-xs text-slate-400">
             <span>Subtotal</span>
             <span id="cartSubtotal" class="font-semibold text-slate-200">Rp 0</span>
@@ -248,7 +249,7 @@
             <span id="cartTotal" class="font-extrabold text-lg text-[#d4a373]">Rp 0</span>
           </div>
 
-          <!-- Single Checkout Button according to initial template -->
+          <!-- Checkout Button -->
           <div class="pt-1">
             <button onclick="openPaymentModal('Cash')" class="w-full bg-[#d4a373] hover:bg-[#c68b59] text-[#141211] font-bold py-3.5 rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 text-sm">
               <i class="fa-solid fa-credit-card"></i> Bayar Sekarang
@@ -259,7 +260,7 @@
     </section>
 
     <!-- 2. DASHBOARD ANALITIK -->
-    <section id="view-analytics" class="hidden flex-1 p-4 md:p-6 overflow-y-auto space-y-6">
+    <section id="view-analytics" class="hidden flex-1 p-4 md:p-6 overflow-y-auto space-y-6 h-full">
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h2 class="text-xl font-bold text-white flex items-center gap-2">
@@ -312,7 +313,7 @@
     </section>
 
     <!-- 3. STOK BAHAN BAKU -->
-    <section id="view-inventory" class="hidden flex-1 p-4 md:p-6 overflow-y-auto space-y-6">
+    <section id="view-inventory" class="hidden flex-1 p-4 md:p-6 overflow-y-auto space-y-6 h-full">
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h2 class="text-xl font-bold text-white flex items-center gap-2">
@@ -338,14 +339,14 @@
         </div>
       </div>
 
-      <!-- Card Grid Inventory (Sesuai Gambar) -->
-      <div id="inventoryCardGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+      <!-- Card Grid Inventory -->
+      <div id="inventoryCardGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 pb-6">
         <!-- Dynamic Inventory Cards Injected Here -->
       </div>
     </section>
 
     <!-- 4. LAPORAN & EXPORT -->
-    <section id="view-history" class="hidden flex-1 p-4 md:p-6 overflow-y-auto space-y-6">
+    <section id="view-history" class="hidden flex-1 p-4 md:p-6 overflow-y-auto space-y-6 h-full">
       <div class="bg-[#1e1a17] border border-[#2e2722] rounded-2xl p-5">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-5 pb-4 border-b border-[#2e2722]">
           <div>
@@ -382,7 +383,7 @@
     </section>
 
     <!-- 5. KELOLA MENU & PENGATURAN -->
-    <section id="view-settings" class="hidden flex-1 p-4 md:p-6 overflow-y-auto space-y-6">
+    <section id="view-settings" class="hidden flex-1 p-4 md:p-6 overflow-y-auto space-y-6 h-full">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         
         <!-- Outlet Branding Settings -->
@@ -484,15 +485,15 @@
     </section>
   </main>
 
-  <!-- MODAL PEMBAYARAN PRESISI SESUAI TEMPLATE -->
+  <!-- MODAL PEMBAYARAN PRESISI -->
   <div id="paymentModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-[#1e1a17] border border-[#2e2722] rounded-3xl p-6 max-w-md w-full space-y-5 shadow-2xl">
+    <div class="bg-[#1e1a17] border border-[#2e2722] rounded-3xl p-6 max-w-md w-full space-y-5 shadow-2xl max-h-[90vh] overflow-y-auto">
       <!-- Modal Header -->
       <div class="flex justify-between items-center border-b border-[#2e2722] pb-4">
         <h3 id="paymentModalTitle" class="font-bold text-white text-base flex items-center gap-2">
           <i class="fa-solid fa-cash-register text-[#d4a373]"></i> Pembayaran
         </h3>
-        <button onclick="closeModal('paymentModal')" class="text-slate-400 hover:text-white transition-colors">
+        <button onclick="closeModal('paymentModal')" class="text-slate-400 hover:text-white transition-colors p-1">
           <i class="fa-solid fa-xmark text-lg"></i>
         </button>
       </div>
@@ -546,16 +547,21 @@
         </div>
       </div>
 
-      <!-- Action Button -->
-      <button onclick="finalizeTransaction()" class="w-full bg-[#d4a373] hover:bg-[#c68b59] text-[#141211] font-extrabold py-3.5 rounded-xl transition-all shadow-lg text-sm">
-        Selesaikan Transaksi
-      </button>
+      <!-- Action Buttons -->
+      <div class="space-y-2 pt-2">
+        <button onclick="finalizeTransaction()" class="w-full bg-[#d4a373] hover:bg-[#c68b59] text-[#141211] font-extrabold py-3.5 rounded-xl transition-all shadow-lg text-sm">
+          Selesaikan Transaksi
+        </button>
+        <button onclick="closeModal('paymentModal')" class="w-full bg-[#141211] hover:bg-[#26211d] text-slate-400 font-semibold py-2.5 rounded-xl text-xs transition-colors">
+          Batal / Kembali
+        </button>
+      </div>
     </div>
   </div>
 
   <!-- RECEIPT MODAL PRINTABLE -->
   <div id="receiptModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-[#1e1a17] border border-[#2e2722] rounded-3xl p-6 max-w-sm w-full space-y-4">
+    <div class="bg-[#1e1a17] border border-[#2e2722] rounded-3xl p-6 max-w-sm w-full space-y-4 max-h-[90vh] overflow-y-auto">
       <div id="printableReceipt" class="bg-white text-slate-900 p-4 rounded-xl text-xs font-mono space-y-3">
         <div class="text-center border-b border-slate-300 pb-2">
           <div id="receiptLogoContainer" class="w-12 h-12 mx-auto mb-1 flex items-center justify-center font-bold text-2xl">
@@ -594,17 +600,18 @@
   <div id="addStockModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
     <div class="bg-[#1e1a17] border border-[#2e2722] rounded-3xl p-6 max-w-md w-full space-y-4">
       <div class="flex justify-between items-center border-b border-[#2e2722] pb-3">
-        <h3 class="font-bold text-white text-sm">Tambah Bahan Baku Baru</h3>
+        <h3 id="stockModalTitle" class="font-bold text-white text-sm">Tambah Bahan Baku Baru</h3>
         <button onclick="closeModal('addStockModal')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
       </div>
+      <input type="hidden" id="stockIdInput">
       <div>
         <label class="text-xs text-slate-400">Nama Bahan Baku</label>
         <input type="text" id="stockNameInput" placeholder="Contoh: Biji Kopi Blend" class="w-full p-2 bg-[#141211] border border-[#2e2722] rounded-xl text-xs text-white mt-1">
       </div>
       <div class="grid grid-cols-2 gap-3">
         <div>
-          <label class="text-xs text-slate-400">Stok Awal</label>
-          <input type="number" id="stockQtyInput" placeholder="1000" class="w-full p-2 bg-[#141211] border border-[#2e2722] rounded-xl text-xs text-white mt-1">
+          <label class="text-xs text-slate-400">Stok Saat Ini</label>
+          <input type="number" step="any" id="stockQtyInput" placeholder="1000" class="w-full p-2 bg-[#141211] border border-[#2e2722] rounded-xl text-xs text-white mt-1">
         </div>
         <div>
           <label class="text-xs text-slate-400">Satuan</label>
@@ -618,20 +625,20 @@
       <div class="grid grid-cols-2 gap-3">
         <div>
           <label class="text-xs text-slate-400">Batas Stok Minimal</label>
-          <input type="number" id="stockMinInput" placeholder="200" class="w-full p-2 bg-[#141211] border border-[#2e2722] rounded-xl text-xs text-white mt-1">
+          <input type="number" step="any" id="stockMinInput" placeholder="200" class="w-full p-2 bg-[#141211] border border-[#2e2722] rounded-xl text-xs text-white mt-1">
         </div>
         <div>
           <label class="text-xs text-slate-400">Harga per Satuan (Rp)</label>
-          <input type="number" id="stockPriceInput" placeholder="150" class="w-full p-2 bg-[#141211] border border-[#2e2722] rounded-xl text-xs text-[#d4a373] font-bold mt-1">
+          <input type="number" step="any" id="stockPriceInput" placeholder="150" class="w-full p-2 bg-[#141211] border border-[#2e2722] rounded-xl text-xs text-[#d4a373] font-bold mt-1">
         </div>
       </div>
-      <button onclick="saveNewStockItem()" class="w-full bg-[#b88652] hover:bg-[#a37443] text-[#141211] font-bold py-2.5 rounded-xl text-xs">Simpan Bahan Baku</button>
+      <button onclick="saveStockItem()" class="w-full bg-[#b88652] hover:bg-[#a37443] text-[#141211] font-bold py-2.5 rounded-xl text-xs">Simpan Bahan Baku</button>
     </div>
   </div>
 
   <!-- MODAL TAMBAH / EDIT MENU -->
   <div id="menuModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-[#1e1a17] border border-[#2e2722] rounded-3xl p-6 max-w-md w-full space-y-4">
+    <div class="bg-[#1e1a17] border border-[#2e2722] rounded-3xl p-6 max-w-md w-full space-y-4 max-h-[90vh] overflow-y-auto">
       <div class="flex justify-between items-center border-b border-[#2e2722] pb-3">
         <h3 id="menuModalTitle" class="font-bold text-white text-sm">Tambah Menu Baru</h3>
         <button onclick="closeModal('menuModal')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
@@ -662,17 +669,19 @@
         <label class="text-xs font-bold text-[#d4a373] block">Hubungkan Resep (Bahan Baku)</label>
         <div class="grid grid-cols-3 gap-2">
           <select id="recipeMatSelect" class="col-span-2 p-2 bg-[#141211] border border-[#2e2722] rounded-xl text-xs text-white"></select>
-          <input type="number" id="recipeQtyInput" placeholder="Takaran" class="p-2 bg-[#141211] border border-[#2e2722] rounded-xl text-xs text-[#d4a373] font-bold">
+          <input type="number" step="any" id="recipeQtyInput" placeholder="Takaran" class="p-2 bg-[#141211] border border-[#2e2722] rounded-xl text-xs text-[#d4a373] font-bold">
         </div>
-        <button onclick="addRecipeIngredient()" class="w-full bg-[#141211] hover:bg-slate-800 text-slate-200 text-xs py-1.5 rounded-lg border border-[#2e2722]">+ Tambah Bahan ke Resep</button>
-        <div id="recipeListContainer" class="space-y-1 max-h-24 overflow-y-auto pt-1"></div>
+        <button type="button" onclick="addRecipeIngredient()" class="w-full bg-[#141211] hover:bg-slate-800 text-slate-200 text-xs py-2 rounded-lg border border-[#2e2722] font-semibold flex items-center justify-center gap-1 transition-colors">
+          <i class="fa-solid fa-plus text-[10px]"></i> Tambah Bahan ke Resep
+        </button>
+        <div id="recipeListContainer" class="space-y-1 max-h-28 overflow-y-auto pt-1"></div>
       </div>
 
       <div>
         <label class="text-xs text-slate-400">Est. HPP (Hitung Otomatis)</label>
         <input type="number" id="menuHppInput" readonly class="w-full p-2 bg-[#141211] border border-[#2e2722] rounded-xl text-xs text-emerald-400 font-bold mt-1">
       </div>
-      <button onclick="saveMenuItem()" class="w-full bg-[#b88652] hover:bg-[#a37443] text-[#141211] font-bold py-2.5 rounded-xl text-xs">
+      <button onclick="saveMenuItem()" class="w-full bg-[#b88652] hover:bg-[#a37443] text-[#141211] font-bold py-2.5 rounded-xl text-xs shadow-lg transition-all">
         Simpan Menu
       </button>
     </div>
@@ -680,7 +689,7 @@
 
   <!-- APPLICATION LOGIC -->
   <script>
-    let currentRole = 'admin'; // 'kasir' or 'admin'
+    let currentRole = 'admin';
     let selectedLoginRole = 'kasir';
 
     let products = [];
@@ -712,9 +721,28 @@
     }
 
     window.onload = () => {
-      // Direct load offline state
       loadOfflineState();
     };
+
+    function recalculateAllProductsHpp() {
+      // Re-calculate HPP for all products based on updated inventory material prices
+      products.forEach(p => {
+        if (p.recipe && p.recipe.length > 0) {
+          let hpp = 0;
+          p.recipe.forEach(r => {
+            const mat = inventory.find(i => i.id === r.materialId);
+            if (mat) {
+              r.name = mat.name; // Keep name fresh
+              r.unit = mat.unit;
+              r.cost = mat.pricePerUnit * r.qty;
+              hpp += r.cost;
+            }
+          });
+          p.hpp = Math.round(hpp);
+        }
+      });
+      saveToLocalStorage(STORAGE_KEYS.PRODUCTS, products);
+    }
 
     function loadOfflineState() {
       inventory = getFromLocalStorage(STORAGE_KEYS.INVENTORY, null);
@@ -722,14 +750,16 @@
         inventory = getDefaultInventory();
         saveToLocalStorage(STORAGE_KEYS.INVENTORY, inventory);
       }
-      renderInventoryCards();
-      populateRecipeSelect();
 
       products = getFromLocalStorage(STORAGE_KEYS.PRODUCTS, null);
       if (!products) {
         products = getDefaultProducts();
         saveToLocalStorage(STORAGE_KEYS.PRODUCTS, products);
       }
+
+      recalculateAllProductsHpp();
+      renderInventoryCards();
+      populateRecipeSelect();
       renderPOSMenu();
       renderSettingsMenuTable();
 
@@ -760,7 +790,7 @@
 
     function getDefaultInventory() {
       return [
-        { id: 'inv_1', name: 'Biji Kopi Espreso', stock: 250, minStock: 30, unit: 'gram', pricePerUnit: 150 },
+        { id: 'inv_1', name: 'Biji Kopi Espreso', stock: 2500, minStock: 300, unit: 'gram', pricePerUnit: 150 },
         { id: 'inv_2', name: 'Susu UHT Fresh Milk', stock: 9850, minStock: 2000, unit: 'ml', pricePerUnit: 18 },
         { id: 'inv_3', name: 'Syrup Lychee', stock: 1500, minStock: 300, unit: 'ml', pricePerUnit: 40 },
         { id: 'inv_4', name: 'Bubuk Milo Sachet', stock: 98, minStock: 15, unit: 'pcs', pricePerUnit: 2500 },
@@ -780,16 +810,16 @@
 
     function getDefaultProducts() {
       return [
-        { id: 'prod_1', name: 'Americano', category: 'Coffee', price: 8000, hpp: 2500, emoji: '☕', image: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=400&q=80', recipe: [] },
-        { id: 'prod_2', name: 'Americano Lychee', category: 'Coffee', price: 10000, hpp: 3200, emoji: '☕', image: 'https://images.unsplash.com/photo-1517701604599-bb29b565090c?auto=format&fit=crop&w=400&q=80', recipe: [] },
-        { id: 'prod_3', name: 'Midnight Berry', category: 'Coffee', price: 15000, hpp: 4500, emoji: '☕', image: 'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?auto=format&fit=crop&w=400&q=80', recipe: [] },
-        { id: 'prod_4', name: 'Coffee Surrend', category: 'Coffee', price: 15000, hpp: 5000, emoji: '☕', image: 'https://images.unsplash.com/photo-1541167760496-1628856ab772?auto=format&fit=crop&w=400&q=80', recipe: [] },
-        { id: 'prod_5', name: 'Ice Milo', category: 'Non-Coffee', price: 8000, hpp: 3000, emoji: '🥛', image: 'https://images.unsplash.com/photo-1542990253-0d0f5be5f0ed?auto=format&fit=crop&w=400&q=80', recipe: [] },
-        { id: 'prod_6', name: 'Milo Dinosaurus', category: 'Non-Coffee', price: 15000, hpp: 5500, emoji: '🍫', image: 'https://images.unsplash.com/photo-1572490122747-3968b75cc699?auto=format&fit=crop&w=400&q=80', recipe: [] },
-        { id: 'prod_7', name: 'Ice Tea', category: 'Non-Coffee', price: 5000, hpp: 1000, emoji: '🍵', image: 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?auto=format&fit=crop&w=400&q=80', recipe: [] },
-        { id: 'prod_8', name: 'Ice Lemon Tea', category: 'Non-Coffee', price: 10000, hpp: 2500, emoji: '🍋', image: 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&w=400&q=80', recipe: [] },
-        { id: 'prod_9', name: 'Mie Nyemek', category: 'Makanan', price: 15000, hpp: 6000, emoji: '🍜', image: 'https://images.unsplash.com/photo-1612927601601-6638404737ce?auto=format&fit=crop&w=400&q=80', recipe: [] },
-        { id: 'prod_10', name: 'Plain Toast', category: 'Toast Series', price: 10000, hpp: 3000, emoji: '🍞', image: 'https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=400&q=80', recipe: [] }
+        { id: 'prod_1', name: 'Americano', category: 'Coffee', price: 8000, hpp: 2700, emoji: '☕', image: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=400&q=80', recipe: [{ materialId: 'inv_1', name: 'Biji Kopi Espreso', qty: 18, unit: 'gram', cost: 2700 }] },
+        { id: 'prod_2', name: 'Americano Lychee', category: 'Coffee', price: 10000, hpp: 3500, emoji: '☕', image: 'https://images.unsplash.com/photo-1517701604599-bb29b565090c?auto=format&fit=crop&w=400&q=80', recipe: [{ materialId: 'inv_1', name: 'Biji Kopi Espreso', qty: 18, unit: 'gram', cost: 2700 }, { materialId: 'inv_3', name: 'Syrup Lychee', qty: 20, unit: 'ml', cost: 800 }] },
+        { id: 'prod_3', name: 'Midnight Berry', category: 'Coffee', price: 15000, hpp: 2700, emoji: '☕', image: 'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?auto=format&fit=crop&w=400&q=80', recipe: [{ materialId: 'inv_1', name: 'Biji Kopi Espreso', qty: 18, unit: 'gram', cost: 2700 }] },
+        { id: 'prod_4', name: 'Coffee Surrend', category: 'Coffee', price: 15000, hpp: 4860, emoji: '☕', image: 'https://images.unsplash.com/photo-1541167760496-1628856ab772?auto=format&fit=crop&w=400&q=80', recipe: [{ materialId: 'inv_1', name: 'Biji Kopi Espreso', qty: 18, unit: 'gram', cost: 2700 }, { materialId: 'inv_2', name: 'Susu UHT Fresh Milk', qty: 120, unit: 'ml', cost: 2160 }] },
+        { id: 'prod_5', name: 'Ice Milo', category: 'Non-Coffee', price: 8000, hpp: 2500, emoji: '🥛', image: 'https://images.unsplash.com/photo-1542990253-0d0f5be5f0ed?auto=format&fit=crop&w=400&q=80', recipe: [{ materialId: 'inv_4', name: 'Bubuk Milo Sachet', qty: 1, unit: 'pcs', cost: 2500 }] },
+        { id: 'prod_6', name: 'Milo Dinosaurus', category: 'Non-Coffee', price: 15000, hpp: 5000, emoji: '🍫', image: 'https://images.unsplash.com/photo-1572490122747-3968b75cc699?auto=format&fit=crop&w=400&q=80', recipe: [{ materialId: 'inv_4', name: 'Bubuk Milo Sachet', qty: 2, unit: 'pcs', cost: 5000 }] },
+        { id: 'prod_7', name: 'Ice Tea', category: 'Non-Coffee', price: 5000, hpp: 500, emoji: '🍵', image: 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?auto=format&fit=crop&w=400&q=80', recipe: [{ materialId: 'inv_5', name: 'Teh Celup Celcius', qty: 1, unit: 'pcs', cost: 500 }] },
+        { id: 'prod_8', name: 'Ice Lemon Tea', category: 'Non-Coffee', price: 10000, hpp: 2000, emoji: '🍋', image: 'https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&w=400&q=80', recipe: [{ materialId: 'inv_5', name: 'Teh Celup Celcius', qty: 1, unit: 'pcs', cost: 500 }, { materialId: 'inv_6', name: 'Ekstrak Lemon', qty: 25, unit: 'ml', cost: 1500 }] },
+        { id: 'prod_9', name: 'Mie Nyemek', category: 'Makanan', price: 15000, hpp: 5500, emoji: '🍜', image: 'https://images.unsplash.com/photo-1612927601601-6638404737ce?auto=format&fit=crop&w=400&q=80', recipe: [{ materialId: 'inv_7', name: 'Mie Instan', qty: 1, unit: 'pcs', cost: 3500 }, { materialId: 'inv_11', name: 'Telur Ayam', qty: 1, unit: 'pcs', cost: 2000 }] },
+        { id: 'prod_10', name: 'Plain Toast', category: 'Toast Series', price: 10000, hpp: 2500, emoji: '🍞', image: 'https://images.unsplash.com/photo-1525351484163-7529414344d8?auto=format&fit=crop&w=400&q=80', recipe: [{ materialId: 'inv_8', name: 'Roti Toast Tawar', qty: 1, unit: 'pcs', cost: 2500 }] }
       ];
     }
 
@@ -821,7 +851,7 @@
         setupRoleUI();
         document.getElementById('loginModal').classList.add('hidden');
       } else {
-        alert("PIN Salah!");
+        alert("PIN Salah! Gunakan PIN 1234 (Kasir) atau 8888 (Admin).");
       }
       document.getElementById('loginPin').value = '';
     }
@@ -923,6 +953,7 @@
 
     function addToCart(id) {
       const prod = products.find(p => p.id === id);
+      if (!prod) return;
       const existing = cart.find(c => c.id === id);
       if (existing) {
         existing.qty++;
@@ -989,7 +1020,7 @@
 
     let currentPaymentType = 'Cash';
     function openPaymentModal(type) {
-      if (cart.length === 0) return alert("Pesanan kosong!");
+      if (cart.length === 0) return alert("Pesanan kosong! Silakan pilih menu terlebih dahulu.");
       
       const subtotal = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
       const discount = parseFloat(document.getElementById('cartDiscount').value) || 0;
@@ -1052,30 +1083,43 @@
     }
 
     function finalizeTransaction() {
+      if (cart.length === 0) return alert("Keranjang kosong!");
+
       const subtotal = cart.reduce((sum, i) => sum + (i.price * i.qty), 0);
       const discount = parseFloat(document.getElementById('cartDiscount').value) || 0;
       const netSubtotal = Math.max(0, subtotal - (subtotal * (discount / 100)));
       const taxAmount = isTaxActive ? (netSubtotal * (taxRate / 100)) : 0;
       const total = netSubtotal + taxAmount;
+      const cashGiven = parseFloat(document.getElementById('cashReceived').value) || total;
+
+      if (currentPaymentType === 'Cash' && cashGiven < total) {
+        return alert("Nominal pembayaran tunai kurang dari total tagihan!");
+      }
 
       const txId = 'TX-' + Date.now().toString().slice(-6);
+      const nowStr = new Date().toLocaleString('id-ID');
+      
       const txData = {
         id: txId,
         txId: txId,
         createdAt: Date.now(),
-        timestamp: new Date().toLocaleString('id-ID'),
+        timestamp: nowStr,
         itemsSummary: cart.map(i => `${i.name} (x${i.qty})`).join(', '),
         rawItems: [...cart],
         paymentType: currentPaymentType,
         subtotal: subtotal,
         discount: discount,
         tax: taxAmount,
-        total: total
+        total: total,
+        cashGiven: cashGiven,
+        change: Math.max(0, cashGiven - total)
       };
 
+      // 1. Save Transaction
       transactions.unshift(txData);
       saveToLocalStorage(STORAGE_KEYS.TRANSACTIONS, transactions);
 
+      // 2. Auto deduct raw material inventory
       cart.forEach(item => {
         if (item.recipe && item.recipe.length > 0) {
           item.recipe.forEach(r => {
@@ -1087,13 +1131,50 @@
         }
       });
       saveToLocalStorage(STORAGE_KEYS.INVENTORY, inventory);
+
+      // 3. Update UI tables & analytics
       renderInventoryCards();
       renderHistoryTable();
       renderAnalytics();
 
-      openReceiptModal(txData);
+      // 4. Open Receipt Modal & Clear Cart
       closeModal('paymentModal');
+      openReceiptModal(txData);
       clearCart();
+    }
+
+    function openReceiptModal(txData) {
+      document.getElementById('receiptTxId').innerText = `ID: ${txData.txId}`;
+      document.getElementById('receiptTxTime').innerText = txData.timestamp;
+      
+      const itemsList = document.getElementById('receiptItemsList');
+      itemsList.innerHTML = '';
+      txData.rawItems.forEach(item => {
+        itemsList.innerHTML += `
+          <div class="flex justify-between">
+            <span>${item.name} x${item.qty}</span>
+            <span>Rp ${(item.price * item.qty).toLocaleString('id-ID')}</span>
+          </div>
+        `;
+      });
+
+      document.getElementById('receiptSubtotal').innerText = `Rp ${txData.subtotal.toLocaleString('id-ID')}`;
+      document.getElementById('receiptDiscount').innerText = `${txData.discount}%`;
+      
+      const receiptTaxRow = document.getElementById('receiptTaxRow');
+      if (txData.tax && txData.tax > 0) {
+        receiptTaxRow.classList.remove('hidden');
+        document.getElementById('receiptTax').innerText = `Rp ${txData.tax.toLocaleString('id-ID')}`;
+      } else {
+        receiptTaxRow.classList.add('hidden');
+      }
+
+      document.getElementById('receiptTotal').innerText = `Rp ${txData.total.toLocaleString('id-ID')}`;
+      document.getElementById('receiptOutletAddress').innerText = outletInfo.address || 'Perkopian Duniawi';
+      document.getElementById('receiptOutletPhone').innerText = outletInfo.phone || '-';
+      document.getElementById('receiptOutletFooter').innerText = outletInfo.footer || 'Terima kasih atas kunjungannya!';
+
+      document.getElementById('receiptModal').classList.remove('hidden');
     }
 
     function renderInventoryCards() {
@@ -1134,7 +1215,7 @@
             <button onclick="restockItem('${i.id}')" class="flex-1 py-2 rounded-xl bg-emerald-950/60 hover:bg-emerald-900/80 text-emerald-400 text-xs font-bold transition-all border border-emerald-800/60 flex items-center justify-center gap-1">
               + Restock
             </button>
-            <button onclick="editStockItem('${i.id}')" class="p-2 rounded-xl bg-[#141211] hover:bg-slate-800 text-slate-300 text-xs border border-[#2e2722] transition-colors" title="Edit">
+            <button onclick="openAddStockModal('${i.id}')" class="p-2 rounded-xl bg-[#141211] hover:bg-slate-800 text-slate-300 text-xs border border-[#2e2722] transition-colors" title="Edit">
               <i class="fa-solid fa-pen"></i>
             </button>
             <button onclick="deleteStockItem('${i.id}')" class="p-2 rounded-xl bg-[#141211] hover:bg-red-950/50 text-slate-400 hover:text-red-400 text-xs border border-[#2e2722] transition-colors" title="Hapus">
@@ -1145,7 +1226,6 @@
         grid.appendChild(card);
       });
 
-      // Update low stock alert banner
       const alertBanner = document.getElementById('low-stock-alert');
       const alertText = document.getElementById('low-stock-alert-text');
       if (lowStockCount > 0 && alertBanner && alertText) {
@@ -1156,74 +1236,89 @@
       }
     }
 
-    function editStockItem(id) {
-      const item = inventory.find(i => i.id === id);
-      if (!item) return;
-      
-      const newName = prompt("Nama Bahan Baku:", item.name);
-      if (!newName) return;
-      const newStock = prompt("Jumlah Stok Saat Ini:", item.stock);
-      if (newStock === null || isNaN(newStock)) return;
-      const newMin = prompt("Batas Stok Minimal:", item.minStock);
-      if (newMin === null || isNaN(newMin)) return;
-      const newPrice = prompt("Harga Cost per Satuan (Rp):", item.pricePerUnit);
-      if (newPrice === null || isNaN(newPrice)) return;
-
-      item.name = newName.trim();
-      item.stock = parseFloat(newStock);
-      item.minStock = parseFloat(newMin);
-      item.pricePerUnit = parseFloat(newPrice);
-
-      saveToLocalStorage(STORAGE_KEYS.INVENTORY, inventory);
-      renderInventoryCards();
-      populateRecipeSelect();
-      renderPOSMenu();
-      renderAnalytics();
-    }
-
-    function deleteStockItem(id) {
-      if (confirm("Hapus bahan baku ini dari inventaris?")) {
-        inventory = inventory.filter(i => i.id !== id);
-        saveToLocalStorage(STORAGE_KEYS.INVENTORY, inventory);
-        renderInventoryCards();
-        populateRecipeSelect();
-        renderPOSMenu();
-        renderAnalytics();
+    function openAddStockModal(id = null) {
+      if (id) {
+        const item = inventory.find(i => i.id === id);
+        if (!item) return;
+        document.getElementById('stockModalTitle').innerText = 'Edit Bahan Baku';
+        document.getElementById('stockIdInput').value = item.id;
+        document.getElementById('stockNameInput').value = item.name;
+        document.getElementById('stockQtyInput').value = item.stock;
+        document.getElementById('stockUnitInput').value = item.unit;
+        document.getElementById('stockMinInput').value = item.minStock;
+        document.getElementById('stockPriceInput').value = item.pricePerUnit;
+      } else {
+        document.getElementById('stockModalTitle').innerText = 'Tambah Bahan Baku Baru';
+        document.getElementById('stockIdInput').value = '';
+        document.getElementById('stockNameInput').value = '';
+        document.getElementById('stockQtyInput').value = '';
+        document.getElementById('stockUnitInput').value = 'gram';
+        document.getElementById('stockMinInput').value = '';
+        document.getElementById('stockPriceInput').value = '';
       }
-    }
-
-    function openAddStockModal() {
-      document.getElementById('stockNameInput').value = '';
-      document.getElementById('stockQtyInput').value = '';
-      document.getElementById('stockMinInput').value = '';
-      document.getElementById('stockPriceInput').value = '';
       document.getElementById('addStockModal').classList.remove('hidden');
     }
 
-    function saveNewStockItem() {
+    function saveStockItem() {
+      const id = document.getElementById('stockIdInput').value;
       const name = document.getElementById('stockNameInput').value.trim();
       const stock = parseFloat(document.getElementById('stockQtyInput').value) || 0;
       const unit = document.getElementById('stockUnitInput').value;
       const minStock = parseFloat(document.getElementById('stockMinInput').value) || 0;
       const pricePerUnit = parseFloat(document.getElementById('stockPriceInput').value) || 0;
 
-      if (!name || stock < 0) return alert("Isi nama dan stok!");
+      if (!name) return alert("Silakan isi nama bahan baku!");
 
-      const docId = 'inv_' + Date.now();
-      const newItem = { id: docId, name, stock, unit, minStock, pricePerUnit };
+      if (id) {
+        // Edit Existing Stock
+        const item = inventory.find(i => i.id === id);
+        if (item) {
+          item.name = name;
+          item.stock = stock;
+          item.unit = unit;
+          item.minStock = minStock;
+          item.pricePerUnit = pricePerUnit;
+        }
+      } else {
+        // Add New Stock Item
+        const newId = 'inv_' + Date.now();
+        inventory.push({ id: newId, name, stock, unit, minStock, pricePerUnit });
+      }
 
-      inventory.push(newItem);
       saveToLocalStorage(STORAGE_KEYS.INVENTORY, inventory);
+      recalculateAllProductsHpp();
       renderInventoryCards();
       populateRecipeSelect();
       renderPOSMenu();
+      renderSettingsMenuTable();
+      renderAnalytics();
 
       closeModal('addStockModal');
     }
 
+    function deleteStockItem(id) {
+      if (confirm("Hapus bahan baku ini dari inventaris?")) {
+        inventory = inventory.filter(i => i.id !== id);
+        // Remove deleted material from any recipes
+        products.forEach(p => {
+          if (p.recipe) {
+            p.recipe = p.recipe.filter(r => r.materialId !== id);
+          }
+        });
+
+        saveToLocalStorage(STORAGE_KEYS.INVENTORY, inventory);
+        recalculateAllProductsHpp();
+        renderInventoryCards();
+        populateRecipeSelect();
+        renderPOSMenu();
+        renderSettingsMenuTable();
+        renderAnalytics();
+      }
+    }
+
     function restockItem(id) {
       const qty = prompt("Masukkan jumlah restock:");
-      if (qty && !isNaN(qty)) {
+      if (qty && !isNaN(qty) && parseFloat(qty) > 0) {
         const item = inventory.find(i => i.id === id);
         if (item) {
           item.stock += parseFloat(qty);
@@ -1236,6 +1331,7 @@
 
     function renderHistoryTable() {
       const tbody = document.getElementById('historyTableBody');
+      if (!tbody) return;
       tbody.innerHTML = '';
       transactions.forEach(t => {
         tbody.innerHTML += `
@@ -1285,11 +1381,14 @@
 
     function renderAnalytics() {
       const totalRev = transactions.reduce((sum, t) => sum + t.total, 0);
-      document.getElementById('statRevenue').innerText = `Rp ${totalRev.toLocaleString('id-ID')}`;
-      document.getElementById('statTxCount').innerText = `${transactions.length} Transaksi`;
+      const statRev = document.getElementById('statRevenue');
+      const statTx = document.getElementById('statTxCount');
+      if (statRev) statRev.innerText = `Rp ${totalRev.toLocaleString('id-ID')}`;
+      if (statTx) statTx.innerText = `${transactions.length} Transaksi`;
 
       let totalGrossProfit = 0;
       const matrixBody = document.getElementById('matrixTableBody');
+      if (!matrixBody) return;
       matrixBody.innerHTML = '';
 
       products.forEach(p => {
@@ -1316,12 +1415,15 @@
           </tr>
         `;
       });
-      document.getElementById('statProfit').innerText = `Rp ${totalGrossProfit.toLocaleString('id-ID')}`;
-      document.getElementById('statAvgMargin').innerText = `${totalRev > 0 ? ((totalGrossProfit / totalRev) * 100).toFixed(1) : 0}%`;
+      const statProfitEl = document.getElementById('statProfit');
+      const statMarginEl = document.getElementById('statAvgMargin');
+      if (statProfitEl) statProfitEl.innerText = `Rp ${totalGrossProfit.toLocaleString('id-ID')}`;
+      if (statMarginEl) statMarginEl.innerText = `${totalRev > 0 ? ((totalGrossProfit / totalRev) * 100).toFixed(1) : 0}%`;
     }
 
     function populateRecipeSelect() {
       const select = document.getElementById('recipeMatSelect');
+      if (!select) return;
       select.innerHTML = '<option value="">-- Pilih Bahan Baku --</option>';
       inventory.forEach(i => {
         select.innerHTML += `<option value="${i.id}">${i.name} (${i.unit})</option>`;
@@ -1329,60 +1431,125 @@
     }
 
     function addRecipeIngredient() {
-      const matId = document.getElementById('recipeMatSelect').value;
-      const qty = parseFloat(document.getElementById('recipeQtyInput').value) || 0;
-      if (!matId || qty <= 0) return alert("Pilih bahan baku dan takaran!");
+      const selectEl = document.getElementById('recipeMatSelect');
+      const qtyEl = document.getElementById('recipeQtyInput');
+      const matId = selectEl.value;
+      const qty = parseFloat(qtyEl.value) || 0;
+      
+      if (!matId || qty <= 0) {
+        alert("Pilih bahan baku dan masukkan takaran yang valid (> 0)!");
+        return;
+      }
 
       const mat = inventory.find(i => i.id === matId);
-      activeRecipe.push({ materialId: matId, name: mat.name, qty: qty, unit: mat.unit, cost: mat.pricePerUnit * qty });
+      if (!mat) return;
+
+      const existing = activeRecipe.find(r => r.materialId === matId);
+      if (existing) {
+        existing.qty += qty;
+        existing.cost = mat.pricePerUnit * existing.qty;
+      } else {
+        activeRecipe.push({
+          materialId: matId,
+          name: mat.name,
+          qty: qty,
+          unit: mat.unit,
+          cost: mat.pricePerUnit * qty
+        });
+      }
+
+      qtyEl.value = '';
       renderRecipeList();
     }
 
     function renderRecipeList() {
       const container = document.getElementById('recipeListContainer');
+      if (!container) return;
       container.innerHTML = '';
       let totalHpp = 0;
+      
+      if (activeRecipe.length === 0) {
+        container.innerHTML = '<p class="text-[11px] text-slate-500 italic py-1">Belum ada bahan baku yang terhubung.</p>';
+        document.getElementById('menuHppInput').value = 0;
+        return;
+      }
+
       activeRecipe.forEach((r, idx) => {
-        totalHpp += r.cost;
-        container.innerHTML += `
-          <div class="flex justify-between items-center bg-[#141211] p-1.5 rounded text-[11px] border border-[#2e2722]">
-            <span class="text-slate-300">${r.name}: ${r.qty} ${r.unit}</span>
-            <button onclick="activeRecipe.splice(${idx},1); renderRecipeList();" class="text-red-400"><i class="fa-solid fa-xmark"></i></button>
-          </div>
+        totalHpp += (r.cost || 0);
+        const div = document.createElement('div');
+        div.className = "flex justify-between items-center bg-[#141211] p-2 rounded-xl text-xs border border-[#2e2722]";
+        div.innerHTML = `
+          <span class="text-slate-200 font-medium">${r.name}: <strong class="text-[#d4a373]">${r.qty} ${r.unit}</strong> <span class="text-[10px] text-slate-400">(Rp ${(r.cost || 0).toLocaleString('id-ID')})</span></span>
+          <button type="button" onclick="removeRecipeIngredient(${idx})" class="text-red-400 hover:text-red-300 px-1.5 py-0.5 rounded hover:bg-red-950/40 transition-colors">
+            <i class="fa-solid fa-trash-can text-xs"></i>
+          </button>
         `;
+        container.appendChild(div);
       });
-      document.getElementById('menuHppInput').value = totalHpp;
+      document.getElementById('menuHppInput').value = Math.round(totalHpp);
     }
 
-    function openMenuModal() {
-      activeRecipe = [];
-      document.getElementById('menuIdInput').value = '';
-      document.getElementById('menuNameInput').value = '';
-      document.getElementById('menuPriceInput').value = '';
-      document.getElementById('menuHppInput').value = '';
+    function removeRecipeIngredient(idx) {
+      activeRecipe.splice(idx, 1);
+      renderRecipeList();
+    }
+
+    function openMenuModal(id = null) {
+      populateRecipeSelect();
+      if (id) {
+        const p = products.find(prod => prod.id === id);
+        if (!p) return;
+        document.getElementById('menuModalTitle').innerText = 'Edit Menu';
+        document.getElementById('menuIdInput').value = p.id;
+        document.getElementById('menuNameInput').value = p.name;
+        document.getElementById('menuCatInput').value = p.category;
+        document.getElementById('menuPriceInput').value = p.price;
+        activeRecipe = p.recipe ? JSON.parse(JSON.stringify(p.recipe)) : [];
+      } else {
+        document.getElementById('menuModalTitle').innerText = 'Tambah Menu Baru';
+        document.getElementById('menuIdInput').value = '';
+        document.getElementById('menuNameInput').value = '';
+        document.getElementById('menuPriceInput').value = '';
+        activeRecipe = [];
+      }
+      document.getElementById('recipeQtyInput').value = '';
       renderRecipeList();
       document.getElementById('menuModal').classList.remove('hidden');
     }
 
     function saveMenuItem() {
+      const id = document.getElementById('menuIdInput').value;
       const name = document.getElementById('menuNameInput').value.trim();
       const cat = document.getElementById('menuCatInput').value;
       const price = parseFloat(document.getElementById('menuPriceInput').value) || 0;
       const hpp = parseFloat(document.getElementById('menuHppInput').value) || 0;
-      if (!name || price <= 0) return alert("Isi nama dan harga!");
+      if (!name || price <= 0) return alert("Silakan isi nama menu dan harga jual yang valid!");
 
-      const docId = 'prod_' + Date.now();
-      const newProd = {
-        id: docId,
-        name: name,
-        category: cat,
-        price: price,
-        hpp: hpp,
-        recipe: [...activeRecipe],
-        image: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=400&q=80'
-      };
+      if (id) {
+        // Edit Existing Menu Product
+        const p = products.find(prod => prod.id === id);
+        if (p) {
+          p.name = name;
+          p.category = cat;
+          p.price = price;
+          p.hpp = hpp;
+          p.recipe = [...activeRecipe];
+        }
+      } else {
+        // Add New Menu Product
+        const docId = 'prod_' + Date.now();
+        const newProd = {
+          id: docId,
+          name: name,
+          category: cat,
+          price: price,
+          hpp: hpp,
+          recipe: [...activeRecipe],
+          image: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=400&q=80'
+        };
+        products.push(newProd);
+      }
 
-      products.push(newProd);
       saveToLocalStorage(STORAGE_KEYS.PRODUCTS, products);
       renderPOSMenu();
       renderSettingsMenuTable();
@@ -1405,7 +1572,10 @@
             <td class="p-3 font-bold text-[#d4a373] text-right">Rp ${p.price.toLocaleString('id-ID')}</td>
             <td class="p-3 text-emerald-400 text-right">Rp ${(p.hpp || 0).toLocaleString('id-ID')}</td>
             <td class="p-3 text-center">
-              <button onclick="deleteMenuProduct('${p.id}')" class="text-red-400 hover:text-red-300"><i class="fa-solid fa-trash"></i></button>
+              <div class="flex items-center justify-center gap-2">
+                <button onclick="openMenuModal('${p.id}')" class="text-slate-300 hover:text-white" title="Edit Menu"><i class="fa-solid fa-pen"></i></button>
+                <button onclick="deleteMenuProduct('${p.id}')" class="text-red-400 hover:text-red-300" title="Hapus Menu"><i class="fa-solid fa-trash"></i></button>
+              </div>
             </td>
           </tr>
         `;
@@ -1415,8 +1585,10 @@
     function deleteMenuProduct(docId) {
       if (confirm("Hapus menu ini?")) {
         products = products.filter(p => p.id !== docId);
+        cart = cart.filter(c => c.id !== docId);
         saveToLocalStorage(STORAGE_KEYS.PRODUCTS, products);
         renderPOSMenu();
+        renderCart();
         renderSettingsMenuTable();
         renderAnalytics();
       }
@@ -1510,7 +1682,10 @@
       }
     }
 
-    function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+    function closeModal(id) { 
+      const modal = document.getElementById(id);
+      if (modal) modal.classList.add('hidden'); 
+    }
   </script>
 </body>
 </html>
