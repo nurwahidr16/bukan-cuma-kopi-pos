@@ -111,8 +111,8 @@
                 <div class="hidden lg:block">
                     <h1 class="font-bold text-lg text-white leading-tight">Bukan Cuma Kopi</h1>
                     <div class="flex items-center gap-1.5 mt-0.5">
-                        <span id="cloud-status-indicator" class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                        <span id="cloud-status-text" class="text-[10px] text-emerald-400 font-semibold">Cloud Sync</span>
+                        <span id="cloud-status-indicator" class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                        <span id="cloud-status-text" class="text-[11px] text-emerald-400 font-bold">Firebase Cloud Connected</span>
                     </div>
                 </div>
             </div>
@@ -956,44 +956,46 @@
 
     <!-- Firebase SDK Modules Script -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, doc, onSnapshot, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getFirestore, collection, doc, onSnapshot, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // Firebase Credentials milik "bukan-cuma-kopi-pos"
+        const firebaseConfig = {
+            apiKey: "AIzaSyCbY3xxg97vgBXoikW5LSkoNSAISYYsLKw",
+            authDomain: "bukan-cuma-kopi-pos.firebaseapp.com",
+            projectId: "bukan-cuma-kopi-pos",
+            storageBucket: "bukan-cuma-kopi-pos.firebasestorage.app",
+            messagingSenderId: "341906819414",
+            appId: "1:341906819414:web:897ada26bfd16653f76ef7",
+            measurementId: "G-V5KFMEXM0D"
+        };
 
         window.FirebaseModule = {
             db: null,
             auth: null,
-            appId: typeof __app_id !== 'undefined' ? __app_id : 'bukan-cuma-kopi-app',
+            appId: 'bukan-cuma-kopi',
             user: null,
             isOnline: false
         };
 
         async function initFirebaseCloud() {
             try {
-                if (typeof __firebase_config !== 'undefined' && __firebase_config) {
-                    const firebaseConfig = JSON.parse(__firebase_config);
-                    const app = initializeApp(firebaseConfig);
-                    const db = getFirestore(app);
-                    const auth = getAuth(app);
+                const app = initializeApp(firebaseConfig);
+                const db = getFirestore(app);
+                const auth = getAuth(app);
 
-                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                        await signInWithCustomToken(auth, __initial_auth_token);
-                    } else {
-                        await signInAnonymously(auth);
-                    }
+                const userCred = await signInAnonymously(auth);
 
-                    window.FirebaseModule.db = db;
-                    window.FirebaseModule.auth = auth;
-                    window.FirebaseModule.user = auth.currentUser;
-                    window.FirebaseModule.isOnline = true;
+                window.FirebaseModule.db = db;
+                window.FirebaseModule.auth = auth;
+                window.FirebaseModule.user = userCred.user;
+                window.FirebaseModule.isOnline = true;
 
-                    updateCloudIndicator(true);
-                    setupCloudListeners();
-                } else {
-                    updateCloudIndicator(false);
-                }
+                updateCloudIndicator(true);
+                setupCloudListeners();
             } catch (err) {
-                console.warn("Firebase Auth/Firestore Offline, Fallback to LocalStorage:", err);
+                console.warn("Firebase Connection Warning, using LocalStorage Fallback:", err);
                 updateCloudIndicator(false);
             }
         }
@@ -1004,13 +1006,13 @@
             if (!ind || !txt) return;
 
             if (isOnline) {
-                ind.className = "w-2 h-2 rounded-full bg-emerald-500 animate-pulse";
-                txt.innerText = "Cloud Sync Active";
-                txt.className = "text-[10px] text-emerald-400 font-semibold";
+                ind.className = "w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse";
+                txt.innerText = "Firebase Cloud Connected";
+                txt.className = "text-[11px] text-emerald-400 font-bold";
             } else {
-                ind.className = "w-2 h-2 rounded-full bg-amber-500";
+                ind.className = "w-2.5 h-2.5 rounded-full bg-amber-500";
                 txt.innerText = "Local Storage Mode";
-                txt.className = "text-[10px] text-amber-400 font-semibold";
+                txt.className = "text-[11px] text-amber-400 font-semibold";
             }
         }
 
@@ -1030,7 +1032,7 @@
                         if (window.renderProducts) window.renderProducts();
                     }
                 }
-            }, (err) => console.error("Firestore Inventory Snapshot error:", err));
+            }, (err) => console.error("Firestore Inventory error:", err));
 
             const prodCol = collection(db, 'artifacts', appId, 'public', 'data', 'products');
             onSnapshot(prodCol, (snapshot) => {
@@ -1042,7 +1044,7 @@
                     if (window.renderProducts) window.renderProducts();
                     if (window.renderManagementGrid) window.renderManagementGrid();
                 }
-            }, (err) => console.error("Firestore Products Snapshot error:", err));
+            }, (err) => console.error("Firestore Products error:", err));
         }
 
         window.syncCloudDoc = async function(colName, docId, data) {
@@ -1084,7 +1086,7 @@
 
         // Standardized units: pcs / ml / gram
         const DEFAULT_INVENTORY = [
-            { id: 'raw_coffee', name: 'Biji Kopi Espreso', qty: 250, unit: 'gram', min: 30, costPerUnit: 150 },
+            { id: 'raw_coffee', name: 'Biji Kopi Espreso', qty: 2500, unit: 'gram', min: 300, costPerUnit: 180 },
             { id: 'raw_milk', name: 'Susu UHT Fresh Milk', qty: 10000, unit: 'ml', min: 2000, costPerUnit: 18 },
             { id: 'raw_lychee', name: 'Syrup Lychee', qty: 1500, unit: 'ml', min: 300, costPerUnit: 40 },
             { id: 'raw_milo', name: 'Bubuk Milo Sachet', qty: 100, unit: 'pcs', min: 15, costPerUnit: 2500 },
@@ -1147,7 +1149,6 @@
             const inputWebhook = document.getElementById('sheets-webhook-url');
             if (inputWebhook) inputWebhook.value = window.sheetsWebhookUrl;
 
-            // Load Tax Configuration into Controls
             const taxToggle = document.getElementById('tax-enable-toggle');
             const taxRateInput = document.getElementById('tax-rate-input');
             if (taxToggle) taxToggle.checked = window.taxConfig.enabled;
@@ -1173,7 +1174,6 @@
             return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(number);
         }
 
-        // RESTO LOGO MANAGEMENT FUNCTIONS
         function handleRestoLogoUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -1229,7 +1229,6 @@
             }
         }
 
-        // DYNAMIC TAX CONFIGURATION
         window.saveTaxConfig = function() {
             const enabled = document.getElementById('tax-enable-toggle').checked;
             const rate = parseFloat(document.getElementById('tax-rate-input').value) || 0;
@@ -1255,7 +1254,6 @@
             }
         }
 
-        // EXPORT TO EXCEL FUNCTION (.xlsx)
         window.exportToExcel = function() {
             if (transactions.length === 0) {
                 alert('Belum ada data transaksi untuk di-export!');
@@ -1285,7 +1283,6 @@
             XLSX.writeFile(workbook, `Laporan_Penjualan_BukanCumaKopi_${todayStr}.xlsx`);
         };
 
-        // GOOGLE SHEETS REALTIME SYNC WEBHOOK
         window.saveSheetsWebhook = function() {
             const url = document.getElementById('sheets-webhook-url').value.trim();
             window.sheetsWebhookUrl = url;
@@ -2122,7 +2119,6 @@
             });
         };
 
-        // RECIPE MAPPING BUILDER FOR MENU FORM
         function addRecipeRow(ingredientId = '', qty = 1) {
             const container = document.getElementById('recipe-items-container');
             if (!container) return;
@@ -2230,7 +2226,6 @@
             const urlInput = document.getElementById('menu-image-url').value;
             const image = uploadedBase64 || urlInput || '';
 
-            // Extract Recipe Mapping from Form Rows
             const recipe = [];
             const container = document.getElementById('recipe-items-container');
             if (container) {
