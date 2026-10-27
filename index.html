@@ -536,6 +536,22 @@
       appId: typeof __app_id !== 'undefined' ? __app_id : 'bukan-cuma-kopi-app'
     };
 
+    function updateCloudIndicatorUI(isConnected) {
+      const statusIndicator = document.getElementById('cloud-status-indicator');
+      const statusText = document.getElementById('cloud-status-text');
+      if (statusIndicator && statusText) {
+        if (isConnected) {
+          statusIndicator.className = "w-2 h-2 rounded-full bg-emerald-400 animate-pulse";
+          statusText.className = "text-[10px] text-emerald-400 font-semibold";
+          statusText.innerText = "Firebase Connected";
+        } else {
+          statusIndicator.className = "w-2 h-2 rounded-full bg-amber-500 animate-pulse";
+          statusText.className = "text-[10px] text-amber-400 font-semibold";
+          statusText.innerText = "Local Storage Mode";
+        }
+      }
+    }
+
     window.initFirebaseFromConfig = async function(cfg) {
       try {
         const app = initializeApp(cfg);
@@ -552,32 +568,29 @@
         window.FirebaseAppModule.auth = auth;
         window.FirebaseAppModule.isOnline = true;
 
-        const statusIndicator = document.getElementById('cloud-status-indicator');
-        const statusText = document.getElementById('cloud-status-text');
-        if (statusIndicator && statusText) {
-          statusIndicator.className = "w-2 h-2 rounded-full bg-emerald-400 animate-pulse";
-          statusText.className = "text-[10px] text-emerald-400 font-semibold";
-          statusText.innerText = "Firebase Connected";
-        }
+        updateCloudIndicatorUI(true);
       } catch (err) {
         console.warn("Firebase Init Error:", err);
+        updateCloudIndicatorUI(false);
       }
     };
 
-    // Auto-connect if config provided via window environment
-    if (typeof __firebase_config !== 'undefined' && __firebase_config) {
-      try {
-        const parsed = JSON.parse(__firebase_config);
-        window.initFirebaseFromConfig(parsed);
-      } catch (e) {}
-    } else {
-      const savedCfg = localStorage.getItem('bck_user_firebase_config');
-      if (savedCfg) {
+    // Auto-connect if config provided via window environment or localStorage
+    window.addEventListener('DOMContentLoaded', () => {
+      if (typeof __firebase_config !== 'undefined' && __firebase_config) {
         try {
-          window.initFirebaseFromConfig(JSON.parse(savedCfg));
+          const parsed = JSON.parse(__firebase_config);
+          window.initFirebaseFromConfig(parsed);
         } catch (e) {}
+      } else {
+        const savedCfg = localStorage.getItem('bck_user_firebase_config');
+        if (savedCfg) {
+          try {
+            window.initFirebaseFromConfig(JSON.parse(savedCfg));
+          } catch (e) {}
+        }
       }
-    }
+    });
   </script>
 
   <script>
