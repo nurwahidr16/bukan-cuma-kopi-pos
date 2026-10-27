@@ -446,248 +446,105 @@
               <input type="number" id="taxRateInput" value="10" min="0" max="100" onchange="updateTaxRate()" onkeyup="updateTaxRate()" class="w-16 bg-[#141211] border border-[#2e2722] rounded px-2 py-1 text-right text-xs text-[#d4a373] font-bold focus:outline-none focus:border-[#b88652]">
             </div>
           </div>
+
+          <!-- Firebase Cloud Connection Settings Card -->
+          <div class="bg-[#1e1a17] border border-[#2e2722] p-5 rounded-2xl space-y-3">
+            <h3 class="font-bold text-white text-sm flex items-center gap-2">
+              <i class="fa-solid fa-cloud text-amber-400"></i> Koneksi Database Cloud (Firebase)
+            </h3>
+            <p class="text-xs text-slate-400">Hubungkan database Firebase Firestore untuk sinkronisasi transaksi & stok secara realtime antar perangkat.</p>
+            <button onclick="openDbConfigModal()" class="w-full bg-[#141211] hover:bg-slate-800 text-[#d4a373] font-bold py-2.5 rounded-xl text-xs border border-[#b88652]/40 flex items-center justify-center gap-2 transition-all">
+              <i class="fa-solid fa-database"></i> Atur Credentials Firebase
+            </button>
+          </div>
         </div>
 
         <!-- Menu Management Table Section -->
         <div class="md:col-span-2 space-y-4">
-          <div class="bg-[#1e1a17] border border-[#2e2722] p-5 rounded-2xl space-y-4">
-            <div class="flex justify-between items-center pb-2 border-b border-[#2e2722]">
-              <div>
-                <h3 class="font-bold text-white text-sm flex items-center gap-2">
-                  <i class="fa-solid fa-utensils text-[#d4a373]"></i> Daftar Menu & HPP Resep
-                </h3>
-                <p class="text-xs text-slate-400">Kelola daftar menu, harga jual, dan resep pemotongan bahan baku</p>
-              </div>
-              <button onclick="openMenuModal()" class="bg-[#b88652] hover:bg-[#a37443] text-[#141211] text-xs font-bold px-3 py-2 rounded-xl flex items-center gap-1.5 shadow">
-                <i class="fa-solid fa-plus"></i> Tambah Menu
-              </button>
-            </div>
-
-            <div class="overflow-x-auto">
-              <table class="w-full text-left text-xs text-slate-300">
-                <thead class="bg-[#141211] text-[#d4a373] font-semibold border-b border-[#2e2722]">
-                  <tr>
-                    <th class="p-3">Nama Menu</th>
-                    <th class="p-3">Kategori</th>
-                    <th class="p-3">Resep (Bahan)</th>
-                    <th class="p-3 text-right">Harga Jual</th>
-                    <th class="p-3 text-right">Est. HPP</th>
-                    <th class="p-3 text-center">Aksi</th>
-                  </tr>
-                </thead>
-                <tbody id="settingsMenuTable" class="divide-y divide-[#2e2722]"></tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </section>
-  </main>
-
-  <!-- MODAL PEMBAYARAN PRESISI -->
-  <div id="paymentModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-[#1e1a17] border border-[#2e2722] rounded-3xl p-6 max-w-md w-full space-y-5 shadow-2xl max-h-[90vh] overflow-y-auto">
-      <!-- Modal Header -->
-      <div class="flex justify-between items-center border-b border-[#2e2722] pb-4">
-        <h3 id="paymentModalTitle" class="font-bold text-white text-base flex items-center gap-2">
-          <i class="fa-solid fa-cash-register text-[#d4a373]"></i> Pembayaran
+  <!-- MODAL DATABASE CONFIG FIREBASE -->
+  <div id="dbConfigModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-[#1e1a17] border border-[#2e2722] rounded-3xl p-6 max-w-md w-full space-y-4 shadow-2xl">
+      <div class="flex justify-between items-center border-b border-[#2e2722] pb-3">
+        <h3 class="font-bold text-white text-sm flex items-center gap-2">
+          <i class="fa-solid fa-cloud text-amber-400"></i> Pengaturan Firebase Credentials
         </h3>
-        <button onclick="closeModal('paymentModal')" class="text-slate-400 hover:text-white transition-colors p-1">
-          <i class="fa-solid fa-xmark text-lg"></i>
-        </button>
+        <button onclick="closeModal('dbConfigModal')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
       </div>
 
-      <!-- Payment Method Switch Tabs -->
-      <div class="grid grid-cols-2 gap-2 p-1 bg-[#141211] border border-[#2e2722] rounded-xl">
-        <button id="payTabCash" onclick="switchPaymentMethod('Cash')" class="py-2.5 rounded-lg text-xs font-bold transition-all bg-[#d4a373] text-[#141211] shadow">
-          Tunai (Cash)
-        </button>
-        <button id="payTabQRIS" onclick="switchPaymentMethod('QRIS')" class="py-2.5 rounded-lg text-xs font-bold transition-all text-slate-400 hover:text-white">
-          QRIS Merchant
-        </button>
+      <p class="text-xs text-slate-400">Tempelkan <strong>firebaseConfig</strong> JS Object / JSON yang didapat dari Firebase Console Anda di bawah ini:</p>
+      
+      <div>
+        <textarea id="dbConfigInput" rows="7" placeholder='{\n  "apiKey": "AIzaSy...",\n  "authDomain": "app.firebaseapp.com",\n  "projectId": "app-id",\n  "storageBucket": "app.appspot.com",\n  "messagingSenderId": "1234...",\n  "appId": "1:1234..."\n}' class="w-full p-3 bg-[#141211] border border-[#2e2722] rounded-xl text-xs text-amber-200 font-mono focus:outline-none focus:border-[#b88652]"></textarea>
       </div>
 
-      <!-- Total Tagihan Display -->
-      <div class="text-center py-1">
-        <p class="text-xs text-slate-400 font-medium">Total Tagihan</p>
-        <h2 id="modalPayTotal" class="text-3xl font-extrabold text-[#d4a373] mt-1">Rp 0</h2>
-      </div>
-
-      <!-- QRIS View Container -->
-      <div id="qrisContainer" class="hidden text-center space-y-3 py-2">
-        <p class="text-xs text-slate-300">Scan QRIS Merchant di bawah ini:</p>
-        <div class="p-3 bg-white rounded-2xl w-48 h-48 mx-auto flex items-center justify-center border border-[#2e2722]">
-          <img id="qrisModalImg" class="max-h-full max-w-full rounded-xl object-contain" alt="QRIS Merchant">
-        </div>
-      </div>
-
-      <!-- Cash View Container -->
-      <div id="cashContainer" class="space-y-4">
-        <div>
-          <label class="text-xs text-slate-400 font-medium block mb-1">Nominal Uang Diterima</label>
-          <div class="relative flex items-center">
-            <span class="absolute left-4 font-bold text-[#d4a373] text-base">Rp</span>
-            <input type="number" id="cashReceived" oninput="calculateChange()" placeholder="0" class="w-full bg-[#141211] border border-[#2e2722] rounded-xl pl-12 pr-4 py-3.5 text-[#d4a373] font-bold text-xl focus:outline-none focus:border-[#d4a373]">
-          </div>
-        </div>
-
-        <!-- Quick Nominal Buttons -->
-        <div class="grid grid-cols-4 gap-2">
-          <button onclick="setQuickAmount(20000)" class="py-2 rounded-xl bg-[#141211] border border-[#2e2722] text-xs font-bold text-slate-300 hover:border-[#d4a373] hover:text-[#d4a373] transition-colors">20.000</button>
-          <button onclick="setQuickAmount(50000)" class="py-2 rounded-xl bg-[#141211] border border-[#2e2722] text-xs font-bold text-slate-300 hover:border-[#d4a373] hover:text-[#d4a373] transition-colors">50.000</button>
-          <button onclick="setQuickAmount(100000)" class="py-2 rounded-xl bg-[#141211] border border-[#2e2722] text-xs font-bold text-slate-300 hover:border-[#d4a373] hover:text-[#d4a373] transition-colors">100.000</button>
-          <button onclick="setExactAmount()" class="py-2 rounded-xl bg-[#d4a373]/10 border border-[#d4a373]/40 text-xs font-bold text-[#d4a373] hover:bg-[#d4a373]/20 transition-colors">Uang Pas</button>
-        </div>
-
-        <!-- Kembalian Display Box -->
-        <div class="flex justify-between items-center bg-[#141211] p-4 rounded-xl border border-[#2e2722]">
-          <span class="text-xs text-slate-400 font-medium">Kembalian</span>
-          <span id="cashChange" class="font-extrabold text-xl text-emerald-400">Rp 0</span>
-        </div>
-      </div>
-
-      <!-- Action Buttons -->
-      <div class="space-y-2 pt-2">
-        <button onclick="finalizeTransaction()" class="w-full bg-[#d4a373] hover:bg-[#c68b59] text-[#141211] font-extrabold py-3.5 rounded-xl transition-all shadow-lg text-sm">
-          Selesaikan Transaksi
-        </button>
-        <button onclick="closeModal('paymentModal')" class="w-full bg-[#141211] hover:bg-[#26211d] text-slate-400 font-semibold py-2.5 rounded-xl text-xs transition-colors">
-          Batal / Kembali
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- RECEIPT MODAL PRINTABLE -->
-  <div id="receiptModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-[#1e1a17] border border-[#2e2722] rounded-3xl p-6 max-w-sm w-full space-y-4 max-h-[90vh] overflow-y-auto">
-      <div id="printableReceipt" class="bg-white text-slate-900 p-4 rounded-xl text-xs font-mono space-y-3">
-        <div class="text-center border-b border-slate-300 pb-2">
-          <div id="receiptLogoContainer" class="w-12 h-12 mx-auto mb-1 flex items-center justify-center font-bold text-2xl">
-            <span id="receiptLogoEmoji">☕</span>
-            <img id="receiptLogoImg" class="w-full h-full object-cover hidden" alt="Logo">
-          </div>
-          <h4 class="font-bold text-sm text-slate-900">BUKAN CUMA KOPI</h4>
-          <p id="receiptOutletAddress" class="text-[10px] text-slate-600">Perkopian Duniawi</p>
-          <p id="receiptOutletPhone" class="text-[10px] text-slate-600">-</p>
-          <p id="receiptTxId" class="text-[10px] text-slate-500 mt-1">ID: -</p>
-          <p id="receiptTxTime" class="text-[10px] text-slate-500">-</p>
-        </div>
-        <div id="receiptItemsList" class="space-y-1 border-b border-slate-300 pb-2"></div>
-        <div class="space-y-1 border-b border-slate-300 pb-2">
-          <div class="flex justify-between"><span>Subtotal:</span><span id="receiptSubtotal">Rp 0</span></div>
-          <div class="flex justify-between"><span>Diskon:</span><span id="receiptDiscount">Rp 0</span></div>
-          <div id="receiptTaxRow" class="flex justify-between hidden"><span>Pajak:</span><span id="receiptTax">Rp 0</span></div>
-          <div class="flex justify-between font-bold text-sm pt-1 border-t border-slate-200"><span>TOTAL:</span><span id="receiptTotal">Rp 0</span></div>
-        </div>
-        <div class="text-center text-[10px] text-slate-500 pt-1">
-          <p id="receiptOutletFooter">Terima kasih atas kunjungannya!</p>
-        </div>
-      </div>
       <div class="flex gap-2">
-        <button onclick="window.print()" class="flex-1 bg-[#b88652] hover:bg-[#a37443] text-[#141211] font-bold py-2 rounded-xl text-xs flex items-center justify-center gap-1.5">
-          <i class="fa-solid fa-print"></i> Cetak Struk
+        <button onclick="saveFirebaseConfig()" class="flex-1 bg-[#b88652] hover:bg-[#a37443] text-[#141211] font-bold py-2.5 rounded-xl text-xs transition-all">
+          Simpan & Hubungkan Database
         </button>
-        <button onclick="closeModal('receiptModal')" class="bg-[#141211] text-slate-300 font-semibold px-4 py-2 rounded-xl text-xs">
-          Tutup
+        <button onclick="disconnectFirebase()" class="bg-red-950/60 hover:bg-red-900/60 text-red-300 font-bold px-4 py-2.5 rounded-xl text-xs border border-red-800/60 transition-all">
+          Reset / Off
         </button>
       </div>
-    </div>
-  </div>
-
-  <!-- MODAL TAMBAH STOK -->
-  <div id="addStockModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-[#1e1a17] border border-[#2e2722] rounded-3xl p-6 max-w-md w-full space-y-4">
-      <div class="flex justify-between items-center border-b border-[#2e2722] pb-3">
-        <h3 id="stockModalTitle" class="font-bold text-white text-sm">Tambah Bahan Baku Baru</h3>
-        <button onclick="closeModal('addStockModal')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
-      </div>
-      <input type="hidden" id="stockIdInput">
-      <div>
-        <label class="text-xs text-slate-400">Nama Bahan Baku</label>
-        <input type="text" id="stockNameInput" placeholder="Contoh: Biji Kopi Blend" class="w-full p-2 bg-[#141211] border border-[#2e2722] rounded-xl text-xs text-white mt-1">
-      </div>
-      <div class="grid grid-cols-2 gap-3">
-        <div>
-          <label class="text-xs text-slate-400">Stok Saat Ini</label>
-          <input type="number" step="any" id="stockQtyInput" placeholder="1000" class="w-full p-2 bg-[#141211] border border-[#2e2722] rounded-xl text-xs text-white mt-1">
-        </div>
-        <div>
-          <label class="text-xs text-slate-400">Satuan</label>
-          <select id="stockUnitInput" class="w-full p-2 bg-[#141211] border border-[#2e2722] rounded-xl text-xs text-white mt-1">
-            <option value="gram">gram</option>
-            <option value="ml">ml</option>
-            <option value="pcs">pcs</option>
-          </select>
-        </div>
-      </div>
-      <div class="grid grid-cols-2 gap-3">
-        <div>
-          <label class="text-xs text-slate-400">Batas Stok Minimal</label>
-          <input type="number" step="any" id="stockMinInput" placeholder="200" class="w-full p-2 bg-[#141211] border border-[#2e2722] rounded-xl text-xs text-white mt-1">
-        </div>
-        <div>
-          <label class="text-xs text-slate-400">Harga per Satuan (Rp)</label>
-          <input type="number" step="any" id="stockPriceInput" placeholder="150" class="w-full p-2 bg-[#141211] border border-[#2e2722] rounded-xl text-xs text-[#d4a373] font-bold mt-1">
-        </div>
-      </div>
-      <button onclick="saveStockItem()" class="w-full bg-[#b88652] hover:bg-[#a37443] text-[#141211] font-bold py-2.5 rounded-xl text-xs">Simpan Bahan Baku</button>
-    </div>
-  </div>
-
-  <!-- MODAL TAMBAH / EDIT MENU -->
-  <div id="menuModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-[#1e1a17] border border-[#2e2722] rounded-3xl p-6 max-w-md w-full space-y-4 max-h-[90vh] overflow-y-auto">
-      <div class="flex justify-between items-center border-b border-[#2e2722] pb-3">
-        <h3 id="menuModalTitle" class="font-bold text-white text-sm">Tambah Menu Baru</h3>
-        <button onclick="closeModal('menuModal')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
-      </div>
-      <input type="hidden" id="menuIdInput">
-      <div>
-        <label class="text-xs text-slate-400">Nama Menu</label>
-        <input type="text" id="menuNameInput" class="w-full p-2 bg-[#141211] border border-[#2e2722] rounded-xl text-xs text-white mt-1">
-      </div>
-      <div class="grid grid-cols-2 gap-3">
-        <div>
-          <label class="text-xs text-slate-400">Kategori</label>
-          <select id="menuCatInput" class="w-full p-2 bg-[#141211] border border-[#2e2722] rounded-xl text-xs text-white mt-1">
-            <option value="Coffee">Coffee</option>
-            <option value="Non-Coffee">Non-Coffee</option>
-            <option value="Makanan">Makanan</option>
-            <option value="Toast Series">Toast Series</option>
-            <option value="Ekstra Topping">Ekstra Topping</option>
-          </select>
-        </div>
-        <div>
-          <label class="text-xs text-slate-400">Harga Jual (Rp)</label>
-          <input type="number" id="menuPriceInput" class="w-full p-2 bg-[#141211] border border-[#2e2722] rounded-xl text-xs text-[#d4a373] font-bold mt-1">
-        </div>
-      </div>
-
-      <div class="border-t border-[#2e2722] pt-3 space-y-2">
-        <label class="text-xs font-bold text-[#d4a373] block">Hubungkan Resep (Bahan Baku)</label>
-        <div class="grid grid-cols-3 gap-2">
-          <select id="recipeMatSelect" class="col-span-2 p-2 bg-[#141211] border border-[#2e2722] rounded-xl text-xs text-white"></select>
-          <input type="number" step="any" id="recipeQtyInput" placeholder="Takaran" class="p-2 bg-[#141211] border border-[#2e2722] rounded-xl text-xs text-[#d4a373] font-bold">
-        </div>
-        <button type="button" onclick="addRecipeIngredient()" class="w-full bg-[#141211] hover:bg-slate-800 text-slate-200 text-xs py-2 rounded-lg border border-[#2e2722] font-semibold flex items-center justify-center gap-1 transition-colors">
-          <i class="fa-solid fa-plus text-[10px]"></i> Tambah Bahan ke Resep
-        </button>
-        <div id="recipeListContainer" class="space-y-1 max-h-28 overflow-y-auto pt-1"></div>
-      </div>
-
-      <div>
-        <label class="text-xs text-slate-400">Est. HPP (Hitung Otomatis)</label>
-        <input type="number" id="menuHppInput" readonly class="w-full p-2 bg-[#141211] border border-[#2e2722] rounded-xl text-xs text-emerald-400 font-bold mt-1">
-      </div>
-      <button onclick="saveMenuItem()" class="w-full bg-[#b88652] hover:bg-[#a37443] text-[#141211] font-bold py-2.5 rounded-xl text-xs shadow-lg transition-all">
-        Simpan Menu
-      </button>
     </div>
   </div>
 
   <!-- APPLICATION LOGIC -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+    import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+    import { getFirestore, collection, doc, onSnapshot, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+    window.FirebaseAppModule = {
+      db: null,
+      auth: null,
+      isOnline: false,
+      appId: typeof __app_id !== 'undefined' ? __app_id : 'bukan-cuma-kopi-app'
+    };
+
+    window.initFirebaseFromConfig = async function(cfg) {
+      try {
+        const app = initializeApp(cfg);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+          await signInWithCustomToken(auth, __initial_auth_token);
+        } else {
+          await signInAnonymously(auth);
+        }
+
+        window.FirebaseAppModule.db = db;
+        window.FirebaseAppModule.auth = auth;
+        window.FirebaseAppModule.isOnline = true;
+
+        const statusIndicator = document.getElementById('cloud-status-indicator');
+        const statusText = document.getElementById('cloud-status-text');
+        if (statusIndicator && statusText) {
+          statusIndicator.className = "w-2 h-2 rounded-full bg-emerald-400 animate-pulse";
+          statusText.className = "text-[10px] text-emerald-400 font-semibold";
+          statusText.innerText = "Firebase Connected";
+        }
+      } catch (err) {
+        console.warn("Firebase Init Error:", err);
+      }
+    };
+
+    // Auto-connect if config provided via window environment
+    if (typeof __firebase_config !== 'undefined' && __firebase_config) {
+      try {
+        const parsed = JSON.parse(__firebase_config);
+        window.initFirebaseFromConfig(parsed);
+      } catch (e) {}
+    } else {
+      const savedCfg = localStorage.getItem('bck_user_firebase_config');
+      if (savedCfg) {
+        try {
+          window.initFirebaseFromConfig(JSON.parse(savedCfg));
+        } catch (e) {}
+      }
+    }
+  </script>
+
   <script>
     let currentRole = 'admin';
     let selectedLoginRole = 'kasir';
@@ -1604,6 +1461,61 @@
       savedSettings.outlet = outletInfo;
       saveToLocalStorage(STORAGE_KEYS.SETTINGS, savedSettings);
       alert("Informasi Outlet Berhasil Disimpan!");
+    }
+
+    function openDbConfigModal() {
+      const saved = localStorage.getItem('bck_user_firebase_config');
+      if (saved) {
+        document.getElementById('dbConfigInput').value = saved;
+      }
+      document.getElementById('dbConfigModal').classList.remove('hidden');
+    }
+
+    function saveFirebaseConfig() {
+      const inputVal = document.getElementById('dbConfigInput').value.trim();
+      if (!inputVal) return alert("Silakan tempelkan firebaseConfig terlebih dahulu!");
+
+      try {
+        let parsed = null;
+        if (inputVal.startsWith('{')) {
+          parsed = JSON.parse(inputVal);
+        } else {
+          // Attempt parsing JS object format if user copies "const firebaseConfig = { ... };"
+          const jsonStr = inputVal
+            .replace(/const\s+firebaseConfig\s*=\s*/, '')
+            .replace(/;/g, '')
+            .replace(/(['"])?([a-zA-Z0-9_]+)(['"])?:/g, '"$2":')
+            .replace(/'/g, '"');
+          parsed = JSON.parse(jsonStr);
+        }
+
+        if (parsed && parsed.apiKey) {
+          localStorage.setItem('bck_user_firebase_config', JSON.stringify(parsed));
+          if (window.initFirebaseFromConfig) {
+            window.initFirebaseFromConfig(parsed);
+          }
+          alert("Firebase Database berhasil terhubung!");
+          closeModal('dbConfigModal');
+        } else {
+          alert("Format firebaseConfig tidak valid! Pastikan memuat apiKey, projectId, dll.");
+        }
+      } catch (e) {
+        alert("Gagal membaca format JSON! Pastikan format JSON/Object valid.\nContoh: {\"apiKey\": \"...\", \"projectId\": \"...\"}");
+      }
+    }
+
+    function disconnectFirebase() {
+      localStorage.removeItem('bck_user_firebase_config');
+      const statusIndicator = document.getElementById('cloud-status-indicator');
+      const statusText = document.getElementById('cloud-status-text');
+      if (statusIndicator && statusText) {
+        statusIndicator.className = "w-2 h-2 rounded-full bg-amber-500 animate-pulse";
+        statusText.className = "text-[10px] text-amber-400 font-semibold";
+        statusText.innerText = "Local Storage Mode";
+      }
+      document.getElementById('dbConfigInput').value = '';
+      alert("Status database dikembalikan ke Local Storage Mode.");
+      closeModal('dbConfigModal');
     }
 
     function toggleTaxSetting() {
