@@ -461,6 +461,41 @@
 
         <!-- Menu Management Table Section -->
         <div class="md:col-span-2 space-y-4">
+          <div class="bg-[#1e1a17] border border-[#2e2722] rounded-2xl p-5">
+            <div class="flex justify-between items-center mb-4 pb-3 border-b border-[#2e2722]">
+              <div>
+                <h3 class="font-bold text-white text-sm flex items-center gap-2">
+                  <i class="fa-solid fa-utensils text-[#d4a373]"></i> Daftar Menu & HPP Resep
+                </h3>
+                <p class="text-xs text-slate-400">Kelola daftar menu, harga jual, dan resep pemotongan bahan baku</p>
+              </div>
+              <button onclick="openMenuModal()" class="bg-[#b88652] hover:bg-[#a37443] text-[#141211] font-bold px-3 py-2 rounded-xl text-xs flex items-center gap-1.5 shadow transition-all">
+                <i class="fa-solid fa-plus"></i> Tambah Menu
+              </button>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs text-slate-300">
+                <thead class="bg-[#141211] text-[#d4a373] font-semibold border-b border-[#2e2722]">
+                  <tr>
+                    <th class="p-3">Nama Menu</th>
+                    <th class="p-3">Kategori</th>
+                    <th class="p-3">Resep (Bahan)</th>
+                    <th class="p-3 text-right">Harga Jual</th>
+                    <th class="p-3 text-right">Est. HPP</th>
+                    <th class="p-3 text-center">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="settingsMenuTable" class="divide-y divide-[#2e2722]"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
   <!-- MODAL DATABASE CONFIG FIREBASE -->
   <div id="dbConfigModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
     <div class="bg-[#1e1a17] border border-[#2e2722] rounded-3xl p-6 max-w-md w-full space-y-4 shadow-2xl">
@@ -474,7 +509,7 @@
       <p class="text-xs text-slate-400">Tempelkan <strong>firebaseConfig</strong> JS Object / JSON yang didapat dari Firebase Console Anda di bawah ini:</p>
       
       <div>
-        <textarea id="dbConfigInput" rows="7" placeholder='{\n  "apiKey": "AIzaSy...",\n  "authDomain": "app.firebaseapp.com",\n  "projectId": "app-id",\n  "storageBucket": "app.appspot.com",\n  "messagingSenderId": "1234...",\n  "appId": "1:1234..."\n}' class="w-full p-3 bg-[#141211] border border-[#2e2722] rounded-xl text-xs text-amber-200 font-mono focus:outline-none focus:border-[#b88652]"></textarea>
+        <textarea id="dbConfigInput" rows="7" placeholder='apiKey: "AIzaSy...",&#10;authDomain: "app.firebaseapp.com",&#10;projectId: "app-id",&#10;storageBucket: "app.appspot.com",&#10;messagingSenderId: "1234...",&#10;appId: "1:1234..."' class="w-full p-3 bg-[#141211] border border-[#2e2722] rounded-xl text-xs text-amber-200 font-mono focus:outline-none focus:border-[#b88652]"></textarea>
       </div>
 
       <div class="flex gap-2">
@@ -1472,24 +1507,33 @@
     }
 
     function saveFirebaseConfig() {
-      const inputVal = document.getElementById('dbConfigInput').value.trim();
-      if (!inputVal) return alert("Silakan tempelkan firebaseConfig terlebih dahulu!");
+      const rawInput = document.getElementById('dbConfigInput').value.trim();
+      if (!rawInput) return alert("Silakan tempelkan firebaseConfig terlebih dahulu!");
 
       try {
         let parsed = null;
-        if (inputVal.startsWith('{')) {
-          parsed = JSON.parse(inputVal);
+        if (rawInput.startsWith('{')) {
+          parsed = JSON.parse(rawInput);
         } else {
-          // Attempt parsing JS object format if user copies "const firebaseConfig = { ... };"
-          const jsonStr = inputVal
-            .replace(/const\s+firebaseConfig\s*=\s*/, '')
+          // Robustly format Javascript object text into valid JSON object
+          let cleaned = rawInput
+            .replace(/const\s+firebaseConfig\s*=\s*/g, '')
             .replace(/;/g, '')
-            .replace(/(['"])?([a-zA-Z0-9_]+)(['"])?:/g, '"$2":')
-            .replace(/'/g, '"');
-          parsed = JSON.parse(jsonStr);
+            .trim();
+
+          // Ensure keys are double-quoted
+          cleaned = cleaned.replace(/([{,]\s*)([a-zA-Z0-9_]+)\s*:/g, '$1"$2":');
+          // Replace single quotes with double quotes around values
+          cleaned = cleaned.replace(/:\s*'([^']*)'/g, ':"$1"');
+
+          if (!cleaned.startsWith('{')) {
+            cleaned = '{' + cleaned + '}';
+          }
+
+          parsed = JSON.parse(cleaned);
         }
 
-        if (parsed && parsed.apiKey) {
+        if (parsed && (parsed.apiKey || parsed.projectId)) {
           localStorage.setItem('bck_user_firebase_config', JSON.stringify(parsed));
           if (window.initFirebaseFromConfig) {
             window.initFirebaseFromConfig(parsed);
@@ -1500,7 +1544,7 @@
           alert("Format firebaseConfig tidak valid! Pastikan memuat apiKey, projectId, dll.");
         }
       } catch (e) {
-        alert("Gagal membaca format JSON! Pastikan format JSON/Object valid.\nContoh: {\"apiKey\": \"...\", \"projectId\": \"...\"}");
+        alert("Gagal membaca format JSON! Pastikan format yang ditempelkan valid.\nContoh:\napiKey: \"...\",\nprojectId: \"...\"");
       }
     }
 
