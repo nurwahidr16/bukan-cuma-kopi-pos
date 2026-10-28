@@ -905,7 +905,7 @@
 
         const appId = UNIFIED_APP_ID;
 
-        // Listener Realtime Firestore - Inventory (PRIORITIZES CLOUD DATA TO SYNC ALL BROWSERS)
+        // Listener Realtime Firestore - Inventory
         const invCol = collection(db, 'artifacts', appId, 'public', 'data', 'inventory');
         onSnapshot(invCol, (snapshot) => {
           if (!snapshot.empty) {
@@ -916,11 +916,12 @@
               window.saveToLocalStorage('bck_pos_inv', window.inventory);
               if (window.renderInventoryCards) window.renderInventoryCards();
               if (window.populateRecipeSelect) window.populateRecipeSelect();
+              if (window.renderPOSMenu) window.renderPOSMenu();
             }
           }
         }, err => console.warn("Firestore inv sync:", err));
 
-        // Listener Realtime Firestore - Products (PRIORITIZES CLOUD DATA TO SYNC ALL BROWSERS)
+        // Listener Realtime Firestore - Products
         const prodCol = collection(db, 'artifacts', appId, 'public', 'data', 'products');
         onSnapshot(prodCol, (snapshot) => {
           if (!snapshot.empty) {
@@ -936,12 +937,12 @@
           }
         }, err => console.warn("Firestore prod sync:", err));
 
-        // Listener Realtime Firestore - Transactions (UNIFIED REALTIME ACROSS ALL DEVICES)
+        // Listener Realtime Firestore - Transactions (INSTANT PUSH TO UI WITHOUT REFRESH)
         const txCol = collection(db, 'artifacts', appId, 'public', 'data', 'transactions');
         onSnapshot(txCol, (snapshot) => {
           const cloudTx = [];
           snapshot.forEach(docSnap => cloudTx.push(docSnap.data()));
-          cloudTx.sort((a, b) => b.createdAt - a.createdAt);
+          cloudTx.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
           window.transactions = cloudTx;
           window.saveToLocalStorage('bck_pos_tx', window.transactions);
           if (window.renderHistoryTable) window.renderHistoryTable();
@@ -1624,10 +1625,15 @@
         change: Math.max(0, cashGiven - total)
       };
 
-      // 1. Save Transaction Realtime Sync
-      transactions.unshift(txData);
-      window.saveToLocalStorage(STORAGE_KEYS.TRANSACTIONS, transactions);
-      if (window.syncCloudData) window.syncCloudData('transactions', txData.id, txData);
+      // 1. Send transaction directly to cloud (Fire & Forget triggers onSnapshot on all open browsers instantly)
+      if (window.syncCloudData) {
+        window.syncCloudData('transactions', txData.id, txData);
+      } else {
+        transactions.unshift(txData);
+        window.saveToLocalStorage(STORAGE_KEYS.TRANSACTIONS, transactions);
+        renderHistoryTable();
+        renderAnalytics();
+      }
 
       // 2. Auto deduct raw material inventory
       cart.forEach(item => {
@@ -1653,12 +1659,7 @@
       });
       window.saveToLocalStorage(STORAGE_KEYS.INVENTORY, inventory);
 
-      // 3. Update UI tables & analytics
-      renderInventoryCards();
-      renderHistoryTable();
-      renderAnalytics();
-
-      // 4. Open Receipt Modal & Clear Cart
+      // 3. Open Receipt Modal & Clear Cart
       closeModal('paymentModal');
       openReceiptModal(txData);
       clearCart();
