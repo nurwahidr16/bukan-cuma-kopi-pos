@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Bukan Cuma Kopi - POS & Inventory System</title>
   
   <!-- Tailwind CSS & FontAwesome Icons -->
@@ -53,6 +53,31 @@
 </head>
 <body class="bg-[#141211] text-slate-100 h-screen w-screen flex flex-col md:flex-row overflow-hidden antialiased">
 
+  <!-- MOBILE TOP HEADER (Nav Toggle for Handphone View) -->
+  <header class="md:hidden bg-[#1e1a17] border-b border-[#2e2722] px-4 py-3 flex justify-between items-center z-30 shrink-0">
+    <div class="flex items-center gap-3">
+      <button onclick="toggleMobileSidebar()" class="w-10 h-10 rounded-xl bg-[#141211] border border-[#2e2722] text-[#d4a373] flex items-center justify-center text-lg focus:outline-none">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+      <div class="flex items-center gap-2">
+        <span class="text-xl">☕</span>
+        <div>
+          <h1 class="font-bold text-sm text-white leading-tight">Bukan Cuma Kopi</h1>
+          <div class="flex items-center gap-1">
+            <span id="mobile-status-dot" class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span id="mobile-status-text" class="text-[9px] text-emerald-400 font-bold">Firebase Connected</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="mobileRoleBadge" class="px-2.5 py-1 rounded-lg bg-[#b88652]/20 border border-[#b88652]/40 text-[#d4a373] text-[10px] font-bold">
+      Admin
+    </div>
+  </header>
+
+  <!-- SIDEBAR MOBILE BACKDROP OVERLAY -->
+  <div id="sidebarBackdrop" onclick="toggleMobileSidebar()" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-40 hidden md:hidden transition-opacity duration-300"></div>
+
   <!-- LOGIN LOCK MODAL -->
   <div id="loginModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
     <div class="bg-[#1e1a17] border border-[#2e2722] rounded-3xl p-6 sm:p-8 max-w-md w-full text-center space-y-6 shadow-2xl relative">
@@ -98,23 +123,29 @@
     </div>
   </div>
 
-  <!-- SIDEBAR NAVIGASI -->
-  <aside class="w-full md:w-64 bg-[#1e1a17] border-r border-[#2e2722] flex flex-col justify-between p-4 shrink-0 z-30 h-full overflow-y-auto">
+  <!-- SIDEBAR NAVIGASI (Desktop Fixed & Mobile Slide Pop-up) -->
+  <aside id="sidebarNav" class="fixed md:static inset-y-0 left-0 -translate-x-full md:translate-x-0 w-72 md:w-64 bg-[#1e1a17] border-r border-[#2e2722] flex flex-col justify-between p-4 z-50 transition-transform duration-300 ease-in-out h-full overflow-y-auto shrink-0">
     <div class="space-y-6">
       
-      <!-- Brand Logo Header -->
-      <div class="flex items-center gap-3 px-2">
-        <div id="headerLogoContainer" class="w-10 h-10 rounded-xl bg-[#b88652] text-[#141211] flex items-center justify-center font-bold text-xl overflow-hidden shadow-lg shrink-0">
-          <span id="headerLogoEmoji">☕</span>
-          <img id="headerLogoImg" class="w-full h-full object-cover hidden" alt="Logo">
-        </div>
-        <div>
-          <h1 class="font-bold text-base text-white leading-tight">Bukan Cuma Kopi</h1>
-          <div class="flex items-center gap-1.5 mt-0.5">
-            <span id="cloud-status-indicator" class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
-            <span id="cloud-status-text" class="text-[10px] text-amber-400 font-semibold">Local Storage Mode</span>
+      <!-- Brand Logo Header & Close Button on Mobile -->
+      <div class="flex items-center justify-between px-2">
+        <div class="flex items-center gap-3">
+          <div id="headerLogoContainer" class="w-10 h-10 rounded-xl bg-[#b88652] text-[#141211] flex items-center justify-center font-bold text-xl overflow-hidden shadow-lg shrink-0">
+            <span id="headerLogoEmoji">☕</span>
+            <img id="headerLogoImg" class="w-full h-full object-cover hidden" alt="Logo">
+          </div>
+          <div>
+            <h1 class="font-bold text-base text-white leading-tight">Bukan Cuma Kopi</h1>
+            <div class="flex items-center gap-1.5 mt-0.5">
+              <span id="cloud-status-indicator" class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span id="cloud-status-text" class="text-[10px] text-emerald-400 font-semibold">Firebase Connected</span>
+            </div>
           </div>
         </div>
+        <!-- Close button for mobile pop-up drawer -->
+        <button onclick="toggleMobileSidebar()" class="md:hidden text-slate-400 hover:text-white p-1">
+          <i class="fa-solid fa-xmark text-xl"></i>
+        </button>
       </div>
 
       <!-- Role Badge -->
@@ -130,33 +161,33 @@
 
       <!-- Navigation Links -->
       <nav class="space-y-1">
-        <button id="nav-pos" onclick="switchTab('pos')" class="nav-btn w-full px-4 py-3 rounded-xl text-xs font-semibold flex items-center justify-between transition-all bg-[#b88652]/10 text-[#d4a373] border border-[#b88652]/30 shadow">
+        <button id="nav-pos" onclick="switchTab('pos'); closeMobileSidebar();" class="nav-btn w-full px-4 py-3 rounded-xl text-xs font-semibold flex items-center justify-between transition-all bg-[#b88652]/10 text-[#d4a373] border border-[#b88652]/30 shadow">
           <span class="flex items-center gap-3">
             <i class="fa-solid fa-cash-register text-sm"></i> Kasir (POS)
           </span>
         </button>
 
-        <button id="nav-analytics" onclick="switchTab('analytics')" class="nav-btn w-full px-4 py-3 rounded-xl text-xs font-semibold flex items-center justify-between transition-all text-slate-400 hover:text-white hover:bg-white/5 border border-transparent">
+        <button id="nav-analytics" onclick="switchTab('analytics'); closeMobileSidebar();" class="nav-btn w-full px-4 py-3 rounded-xl text-xs font-semibold flex items-center justify-between transition-all text-slate-400 hover:text-white hover:bg-white/5 border border-transparent">
           <span class="flex items-center gap-3">
             <i class="fa-solid fa-chart-pie text-sm text-purple-400"></i> Dashboard Analitik
           </span>
           <span class="admin-only px-1.5 py-0.5 text-[9px] bg-purple-900/50 text-purple-300 rounded border border-purple-700 font-bold">Admin</span>
         </button>
 
-        <button id="nav-inventory" onclick="switchTab('inventory')" class="nav-btn w-full px-4 py-3 rounded-xl text-xs font-semibold flex items-center justify-between transition-all text-slate-400 hover:text-white hover:bg-white/5 border border-transparent">
+        <button id="nav-inventory" onclick="switchTab('inventory'); closeMobileSidebar();" class="nav-btn w-full px-4 py-3 rounded-xl text-xs font-semibold flex items-center justify-between transition-all text-slate-400 hover:text-white hover:bg-white/5 border border-transparent">
           <span class="flex items-center gap-3">
             <i class="fa-solid fa-boxes-stacked text-sm text-amber-400"></i> Stok & Bahan Baku
           </span>
           <span class="admin-only px-1.5 py-0.5 text-[9px] bg-purple-900/50 text-purple-300 rounded border border-purple-700 font-bold">Admin</span>
         </button>
 
-        <button id="nav-history" onclick="switchTab('history')" class="nav-btn w-full px-4 py-3 rounded-xl text-xs font-semibold flex items-center justify-between transition-all text-slate-400 hover:text-white hover:bg-white/5 border border-transparent">
+        <button id="nav-history" onclick="switchTab('history'); closeMobileSidebar();" class="nav-btn w-full px-4 py-3 rounded-xl text-xs font-semibold flex items-center justify-between transition-all text-slate-400 hover:text-white hover:bg-white/5 border border-transparent">
           <span class="flex items-center gap-3">
             <i class="fa-solid fa-file-excel text-sm text-emerald-400"></i> Laporan & Export
           </span>
         </button>
 
-        <button id="nav-settings" onclick="switchTab('settings')" class="nav-btn w-full px-4 py-3 rounded-xl text-xs font-semibold flex items-center justify-between transition-all text-slate-400 hover:text-white hover:bg-white/5 border border-transparent">
+        <button id="nav-settings" onclick="switchTab('settings'); closeMobileSidebar();" class="nav-btn w-full px-4 py-3 rounded-xl text-xs font-semibold flex items-center justify-between transition-all text-slate-400 hover:text-white hover:bg-white/5 border border-transparent">
           <span class="flex items-center gap-3">
             <i class="fa-solid fa-sliders text-sm text-sky-400"></i> Kelola Menu & Pengaturan
           </span>
@@ -167,24 +198,24 @@
 
     <!-- Bottom Logout Button -->
     <div class="pt-4 border-t border-[#2e2722] mt-auto">
-      <button onclick="logout()" class="w-full bg-red-950/40 hover:bg-red-900/60 border border-red-800/60 text-red-300 text-xs font-bold py-2.5 rounded-xl transition-all flex items-center justify-center gap-2">
+      <button onclick="logout(); closeMobileSidebar();" class="w-full bg-red-950/40 hover:bg-red-900/60 border border-red-800/60 text-red-300 text-xs font-bold py-2.5 rounded-xl transition-all flex items-center justify-center gap-2">
         <i class="fa-solid fa-power-off"></i> Logout / Ganti Role
       </button>
     </div>
   </aside>
 
   <!-- KONTEN UTAMA -->
-  <main class="flex-1 flex flex-col lg:flex-row overflow-hidden h-full">
+  <main class="flex-1 flex flex-col lg:flex-row overflow-hidden h-full w-full">
 
     <!-- 1. KASIR (POS) -->
     <section id="view-pos" class="flex-1 flex flex-col lg:flex-row overflow-hidden w-full h-full">
       <!-- Left: Menu Catalog Grid -->
-      <div class="flex-1 flex flex-col p-4 md:p-6 overflow-y-auto space-y-5 h-full">
+      <div class="flex-1 flex flex-col p-3 md:p-6 overflow-y-auto space-y-4 md:space-y-5 h-full">
         
         <!-- Header & Search Bar -->
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
           <div>
-            <h2 class="text-xl font-bold text-white tracking-tight">Katalog Menu</h2>
+            <h2 class="text-lg md:text-xl font-bold text-white tracking-tight">Katalog Menu</h2>
             <p class="text-xs text-slate-400">Pilih menu untuk pesanan pelanggan</p>
           </div>
           
@@ -205,15 +236,15 @@
         </div>
 
         <!-- Products Grid -->
-        <div id="menuGrid" class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 pb-6">
+        <div id="menuGrid" class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4 pb-6">
           <!-- Dynamic Menu Cards -->
         </div>
       </div>
 
       <!-- Right: Active Order Cart Panel (Sidebar Right) -->
-      <div class="w-full lg:w-96 bg-[#1e1a17] border-t lg:border-t-0 lg:border-l border-[#2e2722] flex flex-col justify-between h-full z-20 shrink-0">
+      <div class="w-full lg:w-96 bg-[#1e1a17] border-t lg:border-t-0 lg:border-l border-[#2e2722] flex flex-col justify-between h-auto lg:h-full z-20 shrink-0 max-h-[50vh] lg:max-h-full">
         
-        <div class="p-4 border-b border-[#2e2722] flex justify-between items-center shrink-0">
+        <div class="p-3 md:p-4 border-b border-[#2e2722] flex justify-between items-center shrink-0">
           <h3 class="font-bold text-white text-sm flex items-center gap-2">
             <i class="fa-solid fa-receipt text-[#b88652]"></i> Pesanan Saat Ini
           </h3>
@@ -223,12 +254,12 @@
         </div>
 
         <!-- Cart Items list container -->
-        <div id="cartItems" class="flex-1 overflow-y-auto p-4 space-y-3 min-h-0">
+        <div id="cartItems" class="flex-1 overflow-y-auto p-3 md:p-4 space-y-2.5 min-h-[120px] max-h-[220px] lg:max-h-none">
           <!-- Dynamic Items Injected Here -->
         </div>
 
         <!-- Calculation & Summary Footer -->
-        <div class="p-4 bg-[#141211]/60 border-t border-[#2e2722] space-y-3 shrink-0">
+        <div class="p-3 md:p-4 bg-[#141211]/60 border-t border-[#2e2722] space-y-2.5 shrink-0">
           <div class="flex justify-between items-center text-xs text-slate-400">
             <span>Subtotal</span>
             <span id="cartSubtotal" class="font-semibold text-slate-200">Rp 0</span>
@@ -251,7 +282,7 @@
 
           <!-- Checkout Button -->
           <div class="pt-1">
-            <button onclick="openPaymentModal('Cash')" class="w-full bg-[#d4a373] hover:bg-[#c68b59] text-[#141211] font-bold py-3.5 rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 text-sm">
+            <button onclick="openPaymentModal('Cash')" class="w-full bg-[#d4a373] hover:bg-[#c68b59] text-[#141211] font-bold py-3 rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 text-sm">
               <i class="fa-solid fa-credit-card"></i> Bayar Sekarang
             </button>
           </div>
@@ -294,7 +325,7 @@
           <i class="fa-solid fa-ranking-star text-[#d4a373]"></i> Performa & Matriks Menu
         </h3>
         <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs text-slate-300">
+          <table class="w-full text-left text-xs text-slate-300 min-w-[600px]">
             <thead class="bg-[#141211] text-[#d4a373] font-semibold border-b border-[#2e2722]">
               <tr>
                 <th class="p-3">Nama Menu</th>
@@ -362,7 +393,7 @@
         </div>
 
         <div class="overflow-x-auto">
-          <table class="w-full text-left text-xs text-slate-300">
+          <table class="w-full text-left text-xs text-slate-300 min-w-[700px]">
             <thead class="bg-[#141211] text-[#d4a373] font-semibold border-b border-[#2e2722]">
               <tr>
                 <th class="p-3">ID Transaksi</th>
@@ -475,7 +506,7 @@
             </div>
 
             <div class="overflow-x-auto">
-              <table class="w-full text-left text-xs text-slate-300">
+              <table class="w-full text-left text-xs text-slate-300 min-w-[600px]">
                 <thead class="bg-[#141211] text-[#d4a373] font-semibold border-b border-[#2e2722]">
                   <tr>
                     <th class="p-3">Nama Menu</th>
@@ -803,15 +834,30 @@
     function updateCloudIndicatorUI(isConnected) {
       const statusIndicator = document.getElementById('cloud-status-indicator');
       const statusText = document.getElementById('cloud-status-text');
-      if (statusIndicator && statusText) {
-        if (isConnected) {
-          statusIndicator.className = "w-2 h-2 rounded-full bg-emerald-400 animate-pulse";
+      const mobileStatusDot = document.getElementById('mobile-status-dot');
+      const mobileStatusText = document.getElementById('mobile-status-text');
+
+      if (isConnected) {
+        if (statusIndicator) statusIndicator.className = "w-2 h-2 rounded-full bg-emerald-400 animate-pulse";
+        if (statusText) {
           statusText.className = "text-[10px] text-emerald-400 font-semibold";
           statusText.innerText = "Firebase Connected";
-        } else {
-          statusIndicator.className = "w-2 h-2 rounded-full bg-amber-500 animate-pulse";
+        }
+        if (mobileStatusDot) mobileStatusDot.className = "w-2 h-2 rounded-full bg-emerald-400 animate-pulse";
+        if (mobileStatusText) {
+          mobileStatusText.className = "text-[9px] text-emerald-400 font-bold";
+          mobileStatusText.innerText = "Firebase Connected";
+        }
+      } else {
+        if (statusIndicator) statusIndicator.className = "w-2 h-2 rounded-full bg-amber-500 animate-pulse";
+        if (statusText) {
           statusText.className = "text-[10px] text-amber-400 font-semibold";
           statusText.innerText = "Local Storage Mode";
+        }
+        if (mobileStatusDot) mobileStatusDot.className = "w-2 h-2 rounded-full bg-amber-500 animate-pulse";
+        if (mobileStatusText) {
+          mobileStatusText.className = "text-[9px] text-amber-400 font-bold";
+          mobileStatusText.innerText = "Local Storage Mode";
         }
       }
     }
@@ -923,6 +969,30 @@
       PRODUCTS: 'bck_pos_prod',
       TRANSACTIONS: 'bck_pos_tx',
       SETTINGS: 'bck_pos_settings'
+    };
+
+    // Mobile Navigation Pop-up Drawer Handlers
+    window.toggleMobileSidebar = function() {
+      const sidebar = document.getElementById('sidebarNav');
+      const backdrop = document.getElementById('sidebarBackdrop');
+      if (sidebar && backdrop) {
+        if (sidebar.classList.contains('-translate-x-full')) {
+          sidebar.classList.remove('-translate-x-full');
+          backdrop.classList.remove('hidden');
+        } else {
+          sidebar.classList.add('-translate-x-full');
+          backdrop.classList.add('hidden');
+        }
+      }
+    };
+
+    window.closeMobileSidebar = function() {
+      const sidebar = document.getElementById('sidebarNav');
+      const backdrop = document.getElementById('sidebarBackdrop');
+      if (sidebar && backdrop) {
+        sidebar.classList.add('-translate-x-full');
+        backdrop.classList.add('hidden');
+      }
     };
 
     window.saveToLocalStorage = function(key, data) {
@@ -1076,16 +1146,19 @@
       const roleText = document.getElementById('roleText');
       const roleSubtext = document.getElementById('roleSubtext');
       const roleIcon = document.getElementById('roleIcon');
+      const mobileBadge = document.getElementById('mobileRoleBadge');
       
       if (currentRole === 'admin') {
         roleText.innerText = "Admin (Owner)";
         roleSubtext.innerText = "Akses Penuh (Full Control)";
         roleIcon.className = "fa-solid fa-user-shield";
+        if (mobileBadge) mobileBadge.innerText = "Admin";
         document.querySelectorAll('.admin-only').forEach(el => el.classList.remove('hidden'));
       } else {
         roleText.innerText = "Kasir (Staff)";
         roleSubtext.innerText = "Akses Kasir & Transaksi";
         roleIcon.className = "fa-solid fa-user";
+        if (mobileBadge) mobileBadge.innerText = "Kasir";
         document.querySelectorAll('.admin-only').forEach(el => el.classList.add('hidden'));
       }
     }
@@ -1147,20 +1220,20 @@
         }
 
         const card = document.createElement('div');
-        card.className = `bg-[#1e1a17] border border-[#2e2722] rounded-2xl p-3 flex flex-col justify-between hover:border-[#b88652]/50 transition-all group shadow-md ${isOutOfStock ? 'opacity-50 cursor-not-allowed' : ''}`;
+        card.className = `bg-[#1e1a17] border border-[#2e2722] rounded-2xl p-2.5 sm:p-3 flex flex-col justify-between hover:border-[#b88652]/50 transition-all group shadow-md ${isOutOfStock ? 'opacity-50 cursor-not-allowed' : ''}`;
         
         card.innerHTML = `
           <div>
-            <div class="w-full h-28 rounded-xl overflow-hidden mb-2 bg-[#141211] relative">
+            <div class="w-full h-24 sm:h-28 rounded-xl overflow-hidden mb-2 bg-[#141211] relative">
               <img src="${p.image || defaultImg}" alt="${p.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" onerror="this.src='${defaultImg}'">
-              <span class="absolute top-2 left-2 px-2 py-0.5 rounded-md bg-[#141211]/80 text-[10px] font-semibold text-[#d4a373] border border-[#2e2722]">
+              <span class="absolute top-1.5 left-1.5 px-2 py-0.5 rounded-md bg-[#141211]/80 text-[9px] sm:text-[10px] font-semibold text-[#d4a373] border border-[#2e2722]">
                 ${p.category}
               </span>
             </div>
             <h4 class="font-bold text-xs text-slate-200 line-clamp-1 mb-1">${p.name}</h4>
             <p class="text-xs font-semibold text-[#d4a373]">Rp ${p.price.toLocaleString('id-ID')}</p>
           </div>
-          <button onclick="addToCart('${p.id}')" ${isOutOfStock ? 'disabled' : ''} class="w-full mt-3 py-2 rounded-xl bg-white/5 border border-white/10 text-xs font-semibold text-slate-200 hover:bg-[#b88652] hover:text-[#141211] transition-all flex items-center justify-center gap-1.5">
+          <button onclick="addToCart('${p.id}')" ${isOutOfStock ? 'disabled' : ''} class="w-full mt-2 sm:mt-3 py-1.5 sm:py-2 rounded-xl bg-white/5 border border-white/10 text-xs font-semibold text-slate-200 hover:bg-[#b88652] hover:text-[#141211] transition-all flex items-center justify-center gap-1.5">
             + Tambah
           </button>
         `;
@@ -1196,8 +1269,8 @@
       container.innerHTML = '';
       if (cart.length === 0) {
         container.innerHTML = `
-          <div class="h-full flex flex-col items-center justify-center text-center p-6 text-slate-500 my-auto">
-            <i class="fa-solid fa-basket-shopping text-3xl mb-2 opacity-30"></i>
+          <div class="h-full flex flex-col items-center justify-center text-center p-4 text-slate-500 my-auto">
+            <i class="fa-solid fa-basket-shopping text-2xl mb-1 opacity-30"></i>
             <p class="text-xs">Keranjang kosong</p>
           </div>
         `;
@@ -1206,7 +1279,7 @@
       }
       cart.forEach(item => {
         const div = document.createElement('div');
-        div.className = "flex justify-between items-center bg-[#141211]/60 p-2.5 rounded-xl border border-[#2e2722]";
+        div.className = "flex justify-between items-center bg-[#141211]/60 p-2 sm:p-2.5 rounded-xl border border-[#2e2722]";
         div.innerHTML = `
           <div class="flex-1 pr-2">
             <h5 class="text-xs font-bold text-slate-200">${item.name}</h5>
