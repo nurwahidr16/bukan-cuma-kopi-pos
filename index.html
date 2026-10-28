@@ -65,7 +65,7 @@
           <h1 class="font-bold text-sm text-white leading-tight">Bukan Cuma Kopi</h1>
           <div class="flex items-center gap-1">
             <span id="mobile-status-dot" class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            <span id="mobile-status-text" class="text-[9px] text-emerald-400 font-bold">Firebase Connected</span>
+            <span id="mobile-status-text" class="text-[9px] text-emerald-400 font-bold">Firebase Realtime Connected</span>
           </div>
         </div>
       </div>
@@ -81,18 +81,15 @@
   <!-- LOGIN LOCK MODAL -->
   <div id="loginModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4">
     <div class="bg-[#1e1a17] border border-[#2e2722] rounded-3xl p-6 sm:p-8 max-w-md w-full text-center space-y-6 shadow-2xl relative">
-      <!-- Icon Logo -->
       <div class="w-16 h-16 bg-[#b88652]/20 border border-[#b88652]/40 text-[#d4a373] rounded-2xl flex items-center justify-center mx-auto text-2xl shadow-lg">
         <i class="fa-solid fa-mug-hot"></i>
       </div>
 
-      <!-- Subtitle -->
       <div>
         <h2 class="text-2xl font-bold text-white tracking-tight">Bukan Cuma Kopi</h2>
         <p class="text-xs text-[#d4a373] mt-1 font-medium">Cloud POS & Inventory Integrated System</p>
       </div>
 
-      <!-- Role Selector Switch -->
       <div class="grid grid-cols-2 gap-2 p-1 bg-[#141211] border border-[#2e2722] rounded-xl">
         <button id="roleBtnKasir" type="button" onclick="selectLoginRole('kasir')" class="py-2.5 rounded-lg text-xs font-bold transition-all bg-[#b88652] text-[#141211] shadow flex items-center justify-center gap-2">
           <i class="fa-solid fa-user"></i> Kasir / Staff
@@ -102,7 +99,6 @@
         </button>
       </div>
 
-      <!-- Instruction & Input PIN -->
       <div class="space-y-3">
         <p id="pinInstruction" class="text-xs text-slate-400">Masukkan PIN Kasir</p>
         <div class="relative">
@@ -110,12 +106,10 @@
         </div>
       </div>
 
-      <!-- Submit Button -->
       <button type="button" onclick="processLogin()" class="w-full bg-[#b88652] hover:bg-[#a37443] text-[#141211] font-bold py-3.5 rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 text-sm">
         Masuk ke Sistem <i class="fa-solid fa-arrow-right-to-bracket"></i>
       </button>
 
-      <!-- Footer Info -->
       <div class="flex justify-between items-center text-[11px] text-slate-500 pt-2 border-t border-[#2e2722]">
         <span>Single Cloud Sync Active</span>
         <span>BCK POS System</span>
@@ -127,7 +121,6 @@
   <aside id="sidebarNav" class="fixed md:static inset-y-0 left-0 -translate-x-full md:translate-x-0 w-72 md:w-64 bg-[#1e1a17] border-r border-[#2e2722] flex flex-col justify-between p-4 z-50 transition-transform duration-300 ease-in-out h-full overflow-y-auto shrink-0">
     <div class="space-y-6">
       
-      <!-- Brand Logo Header & Close Button on Mobile -->
       <div class="flex items-center justify-between px-2">
         <div class="flex items-center gap-3">
           <div id="headerLogoContainer" class="w-10 h-10 rounded-xl bg-[#b88652] text-[#141211] flex items-center justify-center font-bold text-xl overflow-hidden shadow-lg shrink-0">
@@ -138,17 +131,15 @@
             <h1 class="font-bold text-base text-white leading-tight">Bukan Cuma Kopi</h1>
             <div class="flex items-center gap-1.5 mt-0.5">
               <span id="cloud-status-indicator" class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              <span id="cloud-status-text" class="text-[10px] text-emerald-400 font-semibold">Firebase Connected</span>
+              <span id="cloud-status-text" class="text-[10px] text-emerald-400 font-semibold">Firebase Realtime Connected</span>
             </div>
           </div>
         </div>
-        <!-- Close button for mobile pop-up drawer -->
         <button onclick="toggleMobileSidebar()" class="md:hidden text-slate-400 hover:text-white p-1">
           <i class="fa-solid fa-xmark text-xl"></i>
         </button>
       </div>
 
-      <!-- Role Badge -->
       <div class="bg-[#141211] border border-[#2e2722] rounded-2xl p-3 flex items-center gap-3">
         <div class="w-8 h-8 rounded-lg bg-[#b88652]/20 border border-[#b88652]/40 text-[#d4a373] flex items-center justify-center text-sm shrink-0">
           <i id="roleIcon" class="fa-solid fa-user-shield"></i>
@@ -159,7 +150,6 @@
         </div>
       </div>
 
-      <!-- Navigation Links -->
       <nav class="space-y-1">
         <button id="nav-pos" onclick="switchTab('pos'); closeMobileSidebar();" class="nav-btn w-full px-4 py-3 rounded-xl text-xs font-semibold flex items-center justify-between transition-all bg-[#b88652]/10 text-[#d4a373] border border-[#b88652]/30 shadow">
           <span class="flex items-center gap-3">
@@ -196,7 +186,6 @@
       </nav>
     </div>
 
-    <!-- Bottom Logout Button -->
     <div class="pt-4 border-t border-[#2e2722] mt-auto">
       <button onclick="logout(); closeMobileSidebar();" class="w-full bg-red-950/40 hover:bg-red-900/60 border border-red-800/60 text-red-300 text-xs font-bold py-2.5 rounded-xl transition-all flex items-center justify-center gap-2">
         <i class="fa-solid fa-power-off"></i> Logout / Ganti Role
@@ -209,10 +198,8 @@
 
     <!-- 1. KASIR (POS) -->
     <section id="view-pos" class="flex-1 flex flex-col lg:flex-row overflow-hidden w-full h-full">
-      <!-- Left: Menu Catalog Grid -->
       <div class="flex-1 flex flex-col p-3 md:p-6 overflow-y-auto space-y-4 md:space-y-5 h-full">
         
-        <!-- Header & Search Bar -->
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
           <div>
             <h2 class="text-lg md:text-xl font-bold text-white tracking-tight">Katalog Menu</h2>
@@ -225,7 +212,6 @@
           </div>
         </div>
 
-        <!-- Filter Category Pills -->
         <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
           <button onclick="filterCategory('all', event)" class="cat-btn active px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap bg-[#b88652] text-[#141211] shadow">Semua</button>
           <button onclick="filterCategory('Coffee', event)" class="cat-btn px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap bg-[#1e1a17] border border-[#2e2722] text-slate-400 hover:text-white">☕ Coffee</button>
@@ -235,15 +221,11 @@
           <button onclick="filterCategory('Ekstra Topping', event)" class="cat-btn px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap bg-[#1e1a17] border border-[#2e2722] text-slate-400 hover:text-white">➕ Ekstra Topping</button>
         </div>
 
-        <!-- Products Grid -->
         <div id="menuGrid" class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3 md:gap-4 pb-6">
-          <!-- Dynamic Menu Cards -->
         </div>
       </div>
 
-      <!-- Right: Active Order Cart Panel (Sidebar Right) -->
       <div class="w-full lg:w-96 bg-[#1e1a17] border-t lg:border-t-0 lg:border-l border-[#2e2722] flex flex-col justify-between h-auto lg:h-full z-20 shrink-0 max-h-[50vh] lg:max-h-full">
-        
         <div class="p-3 md:p-4 border-b border-[#2e2722] flex justify-between items-center shrink-0">
           <h3 class="font-bold text-white text-sm flex items-center gap-2">
             <i class="fa-solid fa-receipt text-[#b88652]"></i> Pesanan Saat Ini
@@ -253,12 +235,9 @@
           </button>
         </div>
 
-        <!-- Cart Items list container -->
         <div id="cartItems" class="flex-1 overflow-y-auto p-3 md:p-4 space-y-2.5 min-h-[120px] max-h-[220px] lg:max-h-none">
-          <!-- Dynamic Items Injected Here -->
         </div>
 
-        <!-- Calculation & Summary Footer -->
         <div class="p-3 md:p-4 bg-[#141211]/60 border-t border-[#2e2722] space-y-2.5 shrink-0">
           <div class="flex justify-between items-center text-xs text-slate-400">
             <span>Subtotal</span>
@@ -280,7 +259,6 @@
             <span id="cartTotal" class="font-extrabold text-lg text-[#d4a373]">Rp 0</span>
           </div>
 
-          <!-- Checkout Button -->
           <div class="pt-1">
             <button onclick="openPaymentModal('Cash')" class="w-full bg-[#d4a373] hover:bg-[#c68b59] text-[#141211] font-bold py-3 rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 text-sm">
               <i class="fa-solid fa-credit-card"></i> Bayar Sekarang
@@ -348,7 +326,6 @@
         </button>
       </div>
 
-      <!-- Low Stock Warning Banner -->
       <div id="low-stock-alert" class="hidden p-4 rounded-2xl bg-red-500/10 border border-red-500/30 flex items-center justify-between gap-4">
         <div class="flex items-center gap-3">
           <div class="w-10 h-10 rounded-xl bg-red-500/20 text-red-400 flex items-center justify-center text-lg shrink-0">
@@ -361,9 +338,7 @@
         </div>
       </div>
 
-      <!-- Card Grid Inventory -->
       <div id="inventoryCardGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 pb-6">
-        <!-- Dynamic Inventory Cards Injected Here -->
       </div>
     </section>
 
@@ -408,7 +383,6 @@
     <section id="view-settings" class="hidden flex-1 p-4 md:p-6 overflow-y-auto space-y-6 h-full">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         
-        <!-- Outlet Branding Settings -->
         <div class="space-y-4">
           <div class="bg-[#1e1a17] border border-[#2e2722] p-5 rounded-2xl space-y-3">
             <h3 class="font-bold text-white text-sm flex items-center gap-2">
@@ -455,7 +429,6 @@
             </div>
           </div>
 
-          <!-- PENGATURAN KATA SANDI / PIN KASIR & ADMIN -->
           <div class="bg-[#1e1a17] border border-[#2e2722] p-5 rounded-2xl space-y-3">
             <h3 class="font-bold text-white text-sm flex items-center gap-2">
               <i class="fa-solid fa-key text-amber-400"></i> Ubah PIN Akses Security
@@ -487,7 +460,6 @@
             </div>
           </div>
 
-          <!-- Firebase Cloud Connection Settings Card -->
           <div class="bg-[#1e1a17] border border-[#2e2722] p-5 rounded-2xl space-y-3">
             <h3 class="font-bold text-white text-sm flex items-center gap-2">
               <i class="fa-solid fa-cloud text-amber-400"></i> Koneksi Database Cloud (Firebase)
@@ -499,7 +471,6 @@
           </div>
         </div>
 
-        <!-- Menu Management Table Section -->
         <div class="md:col-span-2 space-y-4">
           <div class="bg-[#1e1a17] border border-[#2e2722] rounded-2xl p-5">
             <div class="flex justify-between items-center mb-4 pb-3 border-b border-[#2e2722]">
@@ -621,7 +592,6 @@
         </div>
       </div>
 
-      <!-- RECIPE INGREDIENT LINKING SECTION -->
       <div class="border-t border-[#2e2722] pt-3 space-y-2">
         <h4 class="text-xs font-bold text-[#d4a373] flex items-center gap-1.5">
           <i class="fa-solid fa-link"></i> Hubungkan Resep (Bahan Baku)
@@ -638,9 +608,7 @@
           + Tambah Bahan ke Resep
         </button>
 
-        <!-- Dynamic List of Ingredients Attached -->
         <div id="recipeListContainer" class="space-y-1.5 max-h-32 overflow-y-auto pt-1">
-          <!-- Dynamic Attached Materials -->
         </div>
       </div>
 
@@ -673,7 +641,6 @@
 
       <input type="hidden" id="optProductId">
 
-      <!-- Spicy Level Selection -->
       <div class="space-y-1.5">
         <label class="text-xs font-bold text-[#d4a373]">Level Kepedasan</label>
         <div class="grid grid-cols-4 gap-1.5">
@@ -684,21 +651,17 @@
         </div>
       </div>
 
-      <!-- Additional Toppings Checklist -->
       <div class="space-y-1.5 border-t border-[#2e2722] pt-3">
         <label class="text-xs font-bold text-[#d4a373]">Ekstra Topping (Opsional)</label>
         <div id="additionalToppingsContainer" class="space-y-1.5 max-h-48 overflow-y-auto pr-1">
-          <!-- Dynamic Topping Options Injected Here -->
         </div>
       </div>
 
-      <!-- Note Input -->
       <div class="space-y-1 border-t border-[#2e2722] pt-3">
         <label class="text-xs text-slate-400">Catatan Khusus (Opsional)</label>
         <input type="text" id="optNoteInput" placeholder="Contoh: Tanpa kuah, tidak pakai daun bawang" class="w-full p-2.5 bg-[#141211] border border-[#2e2722] rounded-xl text-xs text-white focus:outline-none focus:border-[#b88652]">
       </div>
 
-      <!-- Total Price Footer -->
       <div class="flex justify-between items-center p-3 bg-[#141211] rounded-xl border border-[#2e2722]">
         <span class="text-xs text-slate-400">Subtotal Item</span>
         <span id="optCalcTotal" class="font-extrabold text-sm text-[#d4a373]">Rp 0</span>
@@ -735,7 +698,6 @@
         <h2 id="modalPayTotal" class="text-3xl font-extrabold text-[#d4a373] mt-0.5">Rp 0</h2>
       </div>
 
-      <!-- CASH PAYMENT SECTION -->
       <div id="cashContainer" class="space-y-3">
         <div>
           <label class="text-xs text-slate-400">Uang Diterima (Rp)</label>
@@ -756,7 +718,6 @@
         </div>
       </div>
 
-      <!-- QRIS PAYMENT SECTION -->
       <div id="qrisContainer" class="hidden text-center space-y-3 py-2">
         <div class="p-3 bg-white rounded-2xl inline-block shadow-lg">
           <img id="qrisModalImg" src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=BukanCumaKopi" class="w-40 h-40 mx-auto" alt="QRIS Merchant">
@@ -785,7 +746,6 @@
         <button onclick="closeModal('receiptModal')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
       </div>
 
-      <!-- PRINTABLE RECEIPT CONTENT -->
       <div id="printableReceipt" class="p-4 bg-white text-black font-mono text-xs rounded-xl overflow-y-auto space-y-3 flex-1">
         <div class="text-center space-y-1">
           <div id="receiptLogoContainer" class="flex justify-center mb-1">
@@ -877,6 +837,9 @@
     import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
     import { getFirestore, collection, doc, onSnapshot, setDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
+    // UNIFIED REALTIME CLOUD STORAGE ID (UNIFIES ALL PC AND MOBILE DEVICED SESSIONS)
+    const UNIFIED_APP_ID = 'bukan-cuma-kopi-pos-main-v1';
+
     // DEFAULT USER FIREBASE CONFIG
     const DEFAULT_USER_FIREBASE_CONFIG = {
       apiKey: "AIzaSyCbY3xxg97vgBXoikW5LSkoNSAISYYsLKw",
@@ -892,7 +855,7 @@
       db: null,
       auth: null,
       isOnline: false,
-      appId: typeof __app_id !== 'undefined' ? __app_id : 'bukan-cuma-kopi-app'
+      appId: UNIFIED_APP_ID
     };
 
     function updateCloudIndicatorUI(isConnected) {
@@ -940,7 +903,7 @@
 
         updateCloudIndicatorUI(true);
 
-        const appId = window.FirebaseAppModule.appId;
+        const appId = UNIFIED_APP_ID;
 
         // Listener Realtime Firestore - Inventory
         const invCol = collection(db, 'artifacts', appId, 'public', 'data', 'inventory');
@@ -971,21 +934,19 @@
           }
         }, err => console.warn("Firestore prod sync:", err));
 
-        // Listener Realtime Firestore - Transactions (PENTING KASIR & ADMIN SINKRON)
+        // Listener Realtime Firestore - Transactions (UNIFIED REALTIME ACROSS ALL DEVICES)
         const txCol = collection(db, 'artifacts', appId, 'public', 'data', 'transactions');
         onSnapshot(txCol, (snapshot) => {
-          if (!snapshot.empty) {
-            const cloudTx = [];
-            snapshot.forEach(docSnap => cloudTx.push(docSnap.data()));
-            cloudTx.sort((a, b) => b.createdAt - a.createdAt);
-            window.transactions = cloudTx;
-            window.saveToLocalStorage('bck_pos_tx', window.transactions);
-            if (window.renderHistoryTable) window.renderHistoryTable();
-            if (window.renderAnalytics) window.renderAnalytics();
-          }
+          const cloudTx = [];
+          snapshot.forEach(docSnap => cloudTx.push(docSnap.data()));
+          cloudTx.sort((a, b) => b.createdAt - a.createdAt);
+          window.transactions = cloudTx;
+          window.saveToLocalStorage('bck_pos_tx', window.transactions);
+          if (window.renderHistoryTable) window.renderHistoryTable();
+          if (window.renderAnalytics) window.renderAnalytics();
         }, err => console.warn("Firestore tx sync:", err));
 
-        // Listener Realtime Firestore - Settings (Termasuk QRIS & PIN Security)
+        // Listener Realtime Firestore - Settings
         const settingsDoc = doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'global_config');
         onSnapshot(settingsDoc, (docSnap) => {
           if (docSnap.exists()) {
@@ -1004,7 +965,7 @@
     window.syncCloudData = async function(collectionName, docId, data) {
       if (!window.FirebaseAppModule.isOnline || !window.FirebaseAppModule.db) return;
       try {
-        const appId = window.FirebaseAppModule.appId;
+        const appId = UNIFIED_APP_ID;
         const docRef = doc(window.FirebaseAppModule.db, 'artifacts', appId, 'public', 'data', collectionName, docId);
         await setDoc(docRef, data, { merge: true });
       } catch (e) {
@@ -1015,7 +976,7 @@
     window.deleteCloudData = async function(collectionName, docId) {
       if (!window.FirebaseAppModule.isOnline || !window.FirebaseAppModule.db) return;
       try {
-        const appId = window.FirebaseAppModule.appId;
+        const appId = UNIFIED_APP_ID;
         const docRef = doc(window.FirebaseAppModule.db, 'artifacts', appId, 'public', 'data', collectionName, docId);
         await deleteDoc(docRef);
       } catch (e) {
