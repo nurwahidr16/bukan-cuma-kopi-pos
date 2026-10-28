@@ -129,7 +129,7 @@
           </div>
           <div>
             <h1 class="font-bold text-base text-white leading-tight">Bukan Cuma Kopi</h1>
-            <div class="flex items-center gap-1.5 mt-0.5">
+            <div class="flex items-center gap-1.5 mt-0.5 cursor-pointer" onclick="openDbConfigModal()">
               <span id="cloud-status-indicator" class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
               <span id="cloud-status-text" class="text-[10px] text-emerald-400 font-semibold">Firebase Realtime Connected</span>
             </div>
@@ -937,7 +937,7 @@
           }
         }, err => console.warn("Firestore prod sync:", err));
 
-        // Listener Realtime Firestore - Transactions (INSTANT PUSH TO UI WITHOUT REFRESH)
+        // Listener Realtime Firestore - Transactions (INSTANT PUSH TO ALL ACTIVE SESSIONS)
         const txCol = collection(db, 'artifacts', appId, 'public', 'data', 'transactions');
         onSnapshot(txCol, (snapshot) => {
           const cloudTx = [];
@@ -949,7 +949,7 @@
           if (window.renderAnalytics) window.renderAnalytics();
         }, err => console.warn("Firestore tx sync:", err));
 
-        // Listener Realtime Firestore - Settings
+        // Listener Realtime Firestore - Global Settings (Branding, QRIS, Security PINs, Tax)
         const settingsDoc = doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'global_config');
         onSnapshot(settingsDoc, (docSnap) => {
           if (docSnap.exists()) {
@@ -1006,6 +1006,54 @@
     let selectedLoginRole = 'kasir';
     let kasirPin = '1234';
     let adminPin = '8888';
+
+    window.renderPOSMenu = function() {
+      const searchInput = document.getElementById('searchMenu');
+      const search = searchInput ? searchInput.value.toLowerCase() : '';
+      const grid = document.getElementById('menuGrid');
+      if (!grid) return;
+      grid.innerHTML = '';
+
+      const filtered = products.filter(p => {
+        const matchCat = currentCategory === 'all' || p.category === currentCategory;
+        const matchSearch = p.name.toLowerCase().includes(search);
+        return matchCat && matchSearch;
+      });
+
+      filtered.forEach(p => {
+        let isOutOfStock = false;
+        if (p.recipe && p.recipe.length > 0) {
+          isOutOfStock = p.recipe.some(r => {
+            const mat = inventory.find(i => i.id === r.materialId);
+            return !mat || mat.stock < r.qty;
+          });
+        }
+
+        const card = document.createElement('div');
+        card.className = `bg-[#1e1a17] border border-[#2e2722] rounded-2xl p-3 ${isOutOfStock ? 'opacity-50 cursor-not-allowed' : 'hover:border-[#b88652]/50 cursor-pointer'} transition flex flex-col justify-between shadow-md`;
+        if (!isOutOfStock) {
+          card.onclick = () => addToCart(p.id);
+        }
+        
+        card.innerHTML = `
+          <div>
+            <div class="w-full h-24 rounded-xl overflow-hidden mb-2 bg-[#141211] relative">
+              <img src="${p.image || 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=400&q=80'}" alt="${p.name}" class="w-full h-full object-cover">
+              <span class="absolute top-2 left-2 px-2 py-0.5 rounded-md bg-[#141211]/80 backdrop-blur-md text-[9px] font-bold text-[#d4a373] border border-[#2e2722]">
+                ${p.category}
+              </span>
+              ${isOutOfStock ? '<span class="absolute bottom-2 right-2 px-2 py-0.5 rounded-md bg-red-900/90 text-[9px] font-bold text-red-200">Stok Habis</span>' : ''}
+            </div>
+            <h4 class="font-bold text-xs text-slate-200 line-clamp-1">${p.name}</h4>
+            <p class="text-[10px] text-slate-400 font-medium">Rp ${p.price.toLocaleString('id-ID')}</p>
+          </div>
+          <button type="button" class="mt-2 w-full py-1.5 rounded-xl ${isOutOfStock ? 'bg-slate-800 text-slate-500' : 'bg-[#b88652] hover:bg-[#a37443] text-[#141211] font-bold'} text-xs transition-all flex items-center justify-center gap-1">
+            <i class="fa-solid fa-plus text-[10px]"></i> ${isOutOfStock ? 'Habis' : 'Tambah'}
+          </button>
+        `;
+        grid.appendChild(card);
+      });
+    };
 
     window.selectLoginRole = function(role) {
       selectedLoginRole = role;
@@ -1149,53 +1197,16 @@
       loadOfflineState();
     };
 
-    window.renderPOSMenu = function() {
-      const searchInput = document.getElementById('searchMenu');
-      const search = searchInput ? searchInput.value.toLowerCase() : '';
-      const grid = document.getElementById('menuGrid');
-      if (!grid) return;
-      grid.innerHTML = '';
-
-      const filtered = products.filter(p => {
-        const matchCat = currentCategory === 'all' || p.category === currentCategory;
-        const matchSearch = p.name.toLowerCase().includes(search);
-        return matchCat && matchSearch;
+    function filterCategory(cat, evt) {
+      currentCategory = cat;
+      document.querySelectorAll('.cat-btn').forEach(btn => {
+        btn.className = "cat-btn px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap bg-[#1e1a17] border border-[#2e2722] text-slate-400 hover:text-white";
       });
-
-      filtered.forEach(p => {
-        let isOutOfStock = false;
-        if (p.recipe && p.recipe.length > 0) {
-          isOutOfStock = p.recipe.some(r => {
-            const mat = inventory.find(i => i.id === r.materialId);
-            return !mat || mat.stock < r.qty;
-          });
-        }
-
-        const card = document.createElement('div');
-        card.className = `bg-[#1e1a17] border border-[#2e2722] rounded-2xl p-3 ${isOutOfStock ? 'opacity-50 cursor-not-allowed' : 'hover:border-[#b88652]/50 cursor-pointer'} transition flex flex-col justify-between shadow-md`;
-        if (!isOutOfStock) {
-          card.onclick = () => addToCart(p.id);
-        }
-        
-        card.innerHTML = `
-          <div>
-            <div class="w-full h-24 rounded-xl overflow-hidden mb-2 bg-[#141211] relative">
-              <img src="${p.image || 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=400&q=80'}" alt="${p.name}" class="w-full h-full object-cover">
-              <span class="absolute top-2 left-2 px-2 py-0.5 rounded-md bg-[#141211]/80 backdrop-blur-md text-[9px] font-bold text-[#d4a373] border border-[#2e2722]">
-                ${p.category}
-              </span>
-              ${isOutOfStock ? '<span class="absolute bottom-2 right-2 px-2 py-0.5 rounded-md bg-red-900/90 text-[9px] font-bold text-red-200">Stok Habis</span>' : ''}
-            </div>
-            <h4 class="font-bold text-xs text-slate-200 line-clamp-1">${p.name}</h4>
-            <p class="text-[10px] text-slate-400 font-medium">Rp ${p.price.toLocaleString('id-ID')}</p>
-          </div>
-          <button type="button" class="mt-2 w-full py-1.5 rounded-xl ${isOutOfStock ? 'bg-slate-800 text-slate-500' : 'bg-[#b88652] hover:bg-[#a37443] text-[#141211] font-bold'} text-xs transition-all flex items-center justify-center gap-1">
-            <i class="fa-solid fa-plus text-[10px]"></i> ${isOutOfStock ? 'Habis' : 'Tambah'}
-          </button>
-        `;
-        grid.appendChild(card);
-      });
-    };
+      if (evt && evt.target) {
+        evt.target.className = "cat-btn active px-4 py-2 rounded-xl text-xs font-semibold whitespace-nowrap bg-[#b88652] text-[#141211] shadow";
+      }
+      renderPOSMenu();
+    }
 
     function recalculateAllProductsHpp() {
       products.forEach(p => {
@@ -1615,7 +1626,7 @@
         createdAt: Date.now(),
         timestamp: nowStr,
         itemsSummary: itemsSummaryList,
-        rawItems: [...cart],
+        rawItems: JSON.parse(JSON.stringify(cart)),
         paymentType: currentPaymentType,
         subtotal: subtotal,
         discount: discount,
@@ -1625,17 +1636,18 @@
         change: Math.max(0, cashGiven - total)
       };
 
-      // 1. Send transaction directly to cloud (Fire & Forget triggers onSnapshot on all open browsers instantly)
+      // 1. Immediately update local transaction state for zero-latency UI reaction
+      transactions.unshift(txData);
+      window.saveToLocalStorage(STORAGE_KEYS.TRANSACTIONS, transactions);
+      renderHistoryTable();
+      renderAnalytics();
+
+      // 2. Commit transaction to Cloud Firestore (Realtime Push)
       if (window.syncCloudData) {
         window.syncCloudData('transactions', txData.id, txData);
-      } else {
-        transactions.unshift(txData);
-        window.saveToLocalStorage(STORAGE_KEYS.TRANSACTIONS, transactions);
-        renderHistoryTable();
-        renderAnalytics();
       }
 
-      // 2. Auto deduct raw material inventory
+      // 3. Auto deduct raw material inventory
       cart.forEach(item => {
         if (item.recipe && item.recipe.length > 0) {
           item.recipe.forEach(r => {
@@ -1659,7 +1671,7 @@
       });
       window.saveToLocalStorage(STORAGE_KEYS.INVENTORY, inventory);
 
-      // 3. Open Receipt Modal & Clear Cart
+      // 4. Open Receipt Modal & Clear Cart
       closeModal('paymentModal');
       openReceiptModal(txData);
       clearCart();
