@@ -484,7 +484,7 @@
                 <h3 class="font-bold text-white text-sm flex items-center gap-2">
                   <i class="fa-solid fa-utensils text-[#d4a373]"></i> Daftar Menu & HPP Resep
                 </h3>
-                <p class="text-xs text-slate-400">Kelola daftar menu, harga jual, dan resep pemotongan bahan baku</p>
+                <p class="text-xs text-slate-400">Kelola daftar menu, foto produk, harga jual, dan resep pemotongan bahan baku</p>
               </div>
               <button onclick="openMenuModal()" class="bg-[#b88652] hover:bg-[#a37443] text-[#141211] font-bold px-3 py-2 rounded-xl text-xs flex items-center gap-1.5 shadow transition-all">
                 <i class="fa-solid fa-plus"></i> Tambah Menu
@@ -495,6 +495,7 @@
               <table class="w-full text-left text-xs text-slate-300 min-w-[600px]">
                 <thead class="bg-[#141211] text-[#d4a373] font-semibold border-b border-[#2e2722]">
                   <tr>
+                    <th class="p-3">Foto</th>
                     <th class="p-3">Nama Menu</th>
                     <th class="p-3">Kategori</th>
                     <th class="p-3">Resep (Bahan)</th>
@@ -566,7 +567,7 @@
     </div>
   </div>
 
-  <!-- MODAL ADD / EDIT MENU PRODUCT WITH RECIPE -->
+  <!-- MODAL ADD / EDIT MENU PRODUCT WITH IMAGE & RECIPE -->
   <div id="menuModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
     <div class="bg-[#1e1a17] border border-[#2e2722] rounded-3xl p-6 max-w-md w-full space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
       <div class="flex justify-between items-center border-b border-[#2e2722] pb-3">
@@ -595,6 +596,25 @@
         <div>
           <label class="text-xs text-slate-400">Harga Jual (Rp)</label>
           <input type="number" id="menuPriceInput" placeholder="15000" class="w-full p-2.5 bg-[#141211] border border-[#2e2722] rounded-xl text-xs text-white mt-1 focus:outline-none focus:border-[#b88652]">
+        </div>
+      </div>
+
+      <!-- UPLOAD & PREVIEW FOTO PRODUK MENU -->
+      <div class="space-y-2 border-t border-[#2e2722] pt-3">
+        <label class="text-xs font-bold text-[#d4a373] flex items-center gap-1.5">
+          <i class="fa-solid fa-image"></i> Foto Produk Menu
+        </label>
+        <div class="border-2 border-dashed border-[#2e2722] rounded-xl p-3 text-center space-y-2 bg-[#141211]/50">
+          <img id="productImagePreview" class="h-28 w-full object-cover rounded-lg hidden border border-[#2e2722]" alt="Preview Produk">
+          <input type="file" id="productImageInput" accept="image/*" onchange="handleProductImageUpload(event)" class="hidden">
+          <div class="flex gap-2 justify-center">
+            <button type="button" onclick="document.getElementById('productImageInput').click()" class="bg-[#141211] hover:bg-slate-800 text-slate-200 text-xs py-1.5 px-3 rounded-lg border border-[#2e2722] transition-colors">
+              <i class="fa-solid fa-upload"></i> Unggah Foto Menu
+            </button>
+            <button type="button" id="removeProductImgBtn" onclick="removeProductImage()" class="bg-red-950/50 hover:bg-red-900/60 text-red-300 text-xs py-1.5 px-3 rounded-lg border border-red-800/40 hidden transition-colors">
+              <i class="fa-solid fa-trash"></i> Hapus
+            </button>
+          </div>
         </div>
       </div>
 
@@ -930,6 +950,19 @@
             if (window.populateRecipeSelect) window.populateRecipeSelect();
             if (window.renderPOSMenu) window.renderPOSMenu();
           }
+
+          // Fetch fresh Products directly from server
+          const prodCol = collection(db, 'artifacts', appId, 'public', 'data', 'products');
+          const prodSnap = await getDocsFromServer(prodCol);
+          const cloudProd = [];
+          prodSnap.forEach(docSnap => cloudProd.push(docSnap.data()));
+          if (cloudProd.length > 0) {
+            window.products = cloudProd;
+            window.saveToLocalStorage('bck_pos_prod', window.products);
+            if (window.renderPOSMenu) window.renderPOSMenu();
+            if (window.renderSettingsMenuTable) window.renderSettingsMenuTable();
+            if (window.renderAnalytics) window.renderAnalytics();
+          }
         }
       } catch (err) {
         console.warn("Manual server refresh err:", err);
@@ -972,7 +1005,7 @@
           }
         }, err => console.warn("Firestore inv sync:", err));
 
-        // Listener Realtime Firestore - Products
+        // Listener Realtime Firestore - Products (Multi-Session Product & Photo Sync)
         const prodCol = collection(db, 'artifacts', appId, 'public', 'data', 'products');
         onSnapshot(prodCol, (snapshot) => {
           if (!snapshot.empty) {
@@ -1060,6 +1093,7 @@
     let selectedLoginRole = 'kasir';
     let kasirPin = '1234';
     let adminPin = '8888';
+    let currentProductImageData = '';
 
     window.renderPOSMenu = function() {
       const searchInput = document.getElementById('searchMenu');
@@ -1091,7 +1125,7 @@
         
         card.innerHTML = `
           <div>
-            <div class="w-full h-24 rounded-xl overflow-hidden mb-2 bg-[#141211] relative">
+            <div class="w-full h-24 rounded-xl overflow-hidden mb-2 bg-[#141211] relative border border-[#2e2722]/50">
               <img src="${p.image || 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=400&q=80'}" alt="${p.name}" class="w-full h-full object-cover">
               <span class="absolute top-2 left-2 px-2 py-0.5 rounded-md bg-[#141211]/80 backdrop-blur-md text-[9px] font-bold text-[#d4a373] border border-[#2e2722]">
                 ${p.category}
@@ -2099,8 +2133,45 @@
       renderRecipeList();
     }
 
+    // PRODUCT IMAGE UPLOAD HANDLERS
+    window.handleProductImageUpload = function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          currentProductImageData = evt.target.result;
+          const previewImg = document.getElementById('productImagePreview');
+          const removeBtn = document.getElementById('removeProductImgBtn');
+          if (previewImg) {
+            previewImg.src = currentProductImageData;
+            previewImg.classList.remove('hidden');
+          }
+          if (removeBtn) {
+            removeBtn.classList.remove('hidden');
+          }
+        };
+        reader.readAsDataURL(file);
+      }
+    };
+
+    window.removeProductImage = function() {
+      currentProductImageData = '';
+      const previewImg = document.getElementById('productImagePreview');
+      const removeBtn = document.getElementById('removeProductImgBtn');
+      const fileInput = document.getElementById('productImageInput');
+      if (previewImg) previewImg.classList.add('hidden');
+      if (removeBtn) removeBtn.classList.add('hidden');
+      if (fileInput) fileInput.value = '';
+    };
+
     function openMenuModal(id = null) {
       populateRecipeSelect();
+      currentProductImageData = '';
+      const previewImg = document.getElementById('productImagePreview');
+      const removeBtn = document.getElementById('removeProductImgBtn');
+      const fileInput = document.getElementById('productImageInput');
+      if (fileInput) fileInput.value = '';
+
       if (id) {
         const p = products.find(prod => prod.id === id);
         if (!p) return;
@@ -2110,12 +2181,26 @@
         document.getElementById('menuCatInput').value = p.category;
         document.getElementById('menuPriceInput').value = p.price;
         activeRecipe = p.recipe ? JSON.parse(JSON.stringify(p.recipe)) : [];
+
+        if (p.image) {
+          currentProductImageData = p.image;
+          if (previewImg) {
+            previewImg.src = p.image;
+            previewImg.classList.remove('hidden');
+          }
+          if (removeBtn) removeBtn.classList.remove('hidden');
+        } else {
+          if (previewImg) previewImg.classList.add('hidden');
+          if (removeBtn) removeBtn.classList.add('hidden');
+        }
       } else {
         document.getElementById('menuModalTitle').innerText = 'Tambah Menu Baru';
         document.getElementById('menuIdInput').value = '';
         document.getElementById('menuNameInput').value = '';
         document.getElementById('menuPriceInput').value = '';
         activeRecipe = [];
+        if (previewImg) previewImg.classList.add('hidden');
+        if (removeBtn) removeBtn.classList.add('hidden');
       }
       document.getElementById('recipeQtyInput').value = '';
       renderRecipeList();
@@ -2130,6 +2215,8 @@
       const hpp = parseFloat(document.getElementById('menuHppInput').value) || 0;
       if (!name || price <= 0) return alert("Silakan isi nama menu dan harga jual yang valid!");
 
+      const imageToSave = currentProductImageData || 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=400&q=80';
+
       let targetProd = null;
       if (id) {
         targetProd = products.find(prod => prod.id === id);
@@ -2139,6 +2226,7 @@
           targetProd.price = price;
           targetProd.hpp = hpp;
           targetProd.recipe = [...activeRecipe];
+          targetProd.image = imageToSave;
         }
       } else {
         const docId = 'prod_' + Date.now();
@@ -2149,7 +2237,7 @@
           price: price,
           hpp: hpp,
           recipe: [...activeRecipe],
-          image: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=400&q=80'
+          image: imageToSave
         };
         products.push(targetProd);
       }
@@ -2172,6 +2260,11 @@
         const recipeText = p.recipe && p.recipe.length > 0 ? p.recipe.map(r => `${r.name} (${r.qty}${r.unit})`).join(', ') : '-';
         tbody.innerHTML += `
           <tr class="hover:bg-slate-800/50">
+            <td class="p-3">
+              <div class="w-10 h-10 rounded-lg overflow-hidden bg-[#141211] border border-[#2e2722]">
+                <img src="${p.image || 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=400&q=80'}" alt="${p.name}" class="w-full h-full object-cover">
+              </div>
+            </td>
             <td class="p-3 font-bold text-slate-200">${p.name}</td>
             <td class="p-3 text-slate-400">${p.category}</td>
             <td class="p-3 text-slate-400 text-[10px]">${recipeText}</td>
