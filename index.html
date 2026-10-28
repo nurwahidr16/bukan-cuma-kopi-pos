@@ -841,7 +841,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
     import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-    import { getFirestore, collection, doc, onSnapshot, setDoc, deleteDoc, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import { getFirestore, collection, doc, onSnapshot, setDoc, deleteDoc, getDocsFromServer } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
     // UNIFIED REALTIME CLOUD STORAGE ID (UNIFIES ALL PC AND MOBILE DEVICED SESSIONS)
     const UNIFIED_APP_ID = 'bukan-cuma-kopi-pos-main-v1';
@@ -904,9 +904,9 @@
           const db = window.FirebaseAppModule.db;
           const appId = UNIFIED_APP_ID;
 
-          // Fetch fresh Transactions
+          // Force fresh fetch directly from server bypassing cache
           const txCol = collection(db, 'artifacts', appId, 'public', 'data', 'transactions');
-          const txSnap = await getDocs(txCol);
+          const txSnap = await getDocsFromServer(txCol);
           const cloudTx = [];
           txSnap.forEach(docSnap => cloudTx.push(docSnap.data()));
           cloudTx.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
@@ -918,9 +918,9 @@
             if (window.renderAnalytics) window.renderAnalytics();
           }
 
-          // Fetch fresh Inventory
+          // Fetch fresh Inventory directly from server
           const invCol = collection(db, 'artifacts', appId, 'public', 'data', 'inventory');
-          const invSnap = await getDocs(invCol);
+          const invSnap = await getDocsFromServer(invCol);
           const cloudInv = [];
           invSnap.forEach(docSnap => cloudInv.push(docSnap.data()));
           if (cloudInv.length > 0) {
@@ -932,7 +932,7 @@
           }
         }
       } catch (err) {
-        console.warn("Manual refresh err:", err);
+        console.warn("Manual server refresh err:", err);
       } finally {
         setTimeout(() => {
           if (refreshIcon) refreshIcon.classList.remove('fa-spin');
@@ -988,14 +988,14 @@
           }
         }, err => console.warn("Firestore prod sync:", err));
 
-        // Listener Realtime Firestore - Transactions (INSTANT PUSH TO ALL ACTIVE SESSIONS)
+        // Listener Realtime Firestore - Transactions (UNCONDITIONAL SINGLE SOURCE OF TRUTH)
         const txCol = collection(db, 'artifacts', appId, 'public', 'data', 'transactions');
         onSnapshot(txCol, (snapshot) => {
           const cloudTx = [];
           snapshot.forEach(docSnap => cloudTx.push(docSnap.data()));
           cloudTx.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
           
-          if (cloudTx.length > 0 || snapshot.metadata.hasPendingWrites) {
+          if (cloudTx.length > 0) {
             window.transactions = cloudTx;
             window.saveToLocalStorage('bck_pos_tx', window.transactions);
             if (window.renderHistoryTable) window.renderHistoryTable();
