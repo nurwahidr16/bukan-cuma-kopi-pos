@@ -905,7 +905,7 @@
 
         const appId = UNIFIED_APP_ID;
 
-        // Listener Realtime Firestore - Inventory
+        // Listener Realtime Firestore - Inventory (PRIORITIZES CLOUD DATA TO SYNC ALL BROWSERS)
         const invCol = collection(db, 'artifacts', appId, 'public', 'data', 'inventory');
         onSnapshot(invCol, (snapshot) => {
           if (!snapshot.empty) {
@@ -915,11 +915,12 @@
               window.inventory = cloudInv;
               window.saveToLocalStorage('bck_pos_inv', window.inventory);
               if (window.renderInventoryCards) window.renderInventoryCards();
+              if (window.populateRecipeSelect) window.populateRecipeSelect();
             }
           }
         }, err => console.warn("Firestore inv sync:", err));
 
-        // Listener Realtime Firestore - Products
+        // Listener Realtime Firestore - Products (PRIORITIZES CLOUD DATA TO SYNC ALL BROWSERS)
         const prodCol = collection(db, 'artifacts', appId, 'public', 'data', 'products');
         onSnapshot(prodCol, (snapshot) => {
           if (!snapshot.empty) {
@@ -930,6 +931,7 @@
               window.saveToLocalStorage('bck_pos_prod', window.products);
               if (window.renderPOSMenu) window.renderPOSMenu();
               if (window.renderSettingsMenuTable) window.renderSettingsMenuTable();
+              if (window.renderAnalytics) window.renderAnalytics();
             }
           }
         }, err => console.warn("Firestore prod sync:", err));
